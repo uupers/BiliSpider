@@ -1,7 +1,7 @@
-#!/usr/bin/python3
+#!pyana
 # -*- coding: utf-8 -*-
 
-import json, re, math, time
+import json, math
 from collections import deque
 from time import sleep
 from threading import RLock, Thread, Condition
@@ -9,8 +9,8 @@ from threading import RLock, Thread, Condition
 import requests
 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+#import numpy as np
+#import matplotlib.pyplot as plt
 
 # *******************************************************
 # 封装 HTTP 请求
@@ -77,8 +77,8 @@ def deamon():
 					cb(res)
 
 				else:
-					message = res['message']
-					ttl = res['ttl']
+					#message = res['message']
+					#ttl = res['ttl']
 					cb(None)
 					# TODO logging
 
@@ -156,7 +156,7 @@ def get_followers(user_id, count_followers):
 
 	for page in range(1, min(5, 1 + math.ceil(count_followers / step))):
 		url = 'https://api.bilibili.com/x/relation/followers?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
-		res = get(url, handler=handle_jp5, callback=lambda res: followers.extend(handle_relation_data(res['data'])))
+		get(url, handler=handle_jp5, callback=lambda res: followers.extend(handle_relation_data(res['data'])))
 
 	return followers
 
@@ -169,7 +169,7 @@ def get_followings(user_id, count_followings):
 
 	for page in range(1, min(5, 1 + math.ceil(count_followings / step))):
 		url = 'https://api.bilibili.com/x/relation/followings?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
-		res = get(url, handler=handle_jp5, callback=lambda res: followings.extend(handle_relation_data(res['data'])))
+		get(url, handler=handle_jp5, callback=lambda res: followings.extend(handle_relation_data(res['data'])))
 
 	return followings
 
@@ -177,8 +177,8 @@ def get_followings(user_id, count_followings):
 # 获取该用户基础信息
 # *******************************************************
 def get_user_info(user_id):
-	url01 = 'https://api.bilibili.com/x/relation/stat?vmid={}'.format(user_id)
-	url02 = 'https://api.bilibili.com/x/space/navnum?mid={}'.format(m_id)
+	#url01 = 'https://api.bilibili.com/x/relation/stat?vmid={}'.format(user_id)
+	url02 = 'https://api.bilibili.com/x/space/navnum?mid={}'.format(user_id)
 	step = 50
 	following = None
 	follower = None
