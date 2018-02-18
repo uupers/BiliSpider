@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import json, re, math, time
@@ -26,7 +26,7 @@ is_closing = False
 def deamon():
 
 	while not is_closing:
-		
+
 		try:
 			with tasks_rlock:
 				while not tasks_condition_is_empty():
