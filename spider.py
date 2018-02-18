@@ -180,13 +180,13 @@ def get_user_info(user_id):
 
 		data = res01['data']
 		# 该用户关注的人 - 数量
-		following = data['following']
+		following = int(data['following'])
 		# 该用户的悄悄话 - 数量
-		#whisper = data['whisper']
+		#whisper = int(data['whisper'])
 		# 该用户的黑名单 - 数量
-		#black = data['black']
+		#black = int(data['black'])
 		# 关注该用户的人 - 数量
-		follower = data['follower']
+		follower = int(data['follower'])
 
 		# 该用户的关注列表
 		list_followings = get_followings(user_id, following)
@@ -198,17 +198,17 @@ def get_user_info(user_id):
 
 		data = res02['data']
 		# 该用户上传的视频 - 数量
-		video = data['video']
+		video = int(data['video'])
 		# 该用户订阅的番剧 - 数量
-		#bangumi = data['bangumi']
+		#bangumi = int(data['bangumi'])
 		# 该用户创建的频道 - 数量
-		#channel = {'master': data['channel']['master'], 'guest': data['channel']['guest']}
+		#channel = {'master': int(data['channel']['master']), 'guest': int(data['channel']['guest'])}
 		# 该用户创建的收藏夹 - 数量
-		#favourite = {'master': data['favourite']['master'], 'guest': data['favourite']['guest']}
+		#favourite = {'master': int(data['favourite']['master']), 'guest': int(data['favourite']['guest'])}
 		# 该用户订阅的标签 - 数量
-		#tag = data['tag']
+		#tag = int(data['tag'])
 		# 该用户撰写的文章 - 数量
-		#article = data['article']
+		#article = int(data['article'])
 		#playlist = data['playlist']
 		#album = data['album']
 
@@ -221,11 +221,11 @@ def get_user_info(user_id):
 		for video_info in vlist:
 			videos.append({
 				# 评论数量
-				'comment': video_info['comment'],
+				'comment': int(video_info['comment']),
 				# 视频分类
 				'typeid': video_info['typeid'],
 				# 播放量
-				'play': video_info['play'],
+				'play': int(video_info['play']),
 				# 视频封面图片
 				'pic': video_info['pic'],
 				# 子标题？
@@ -240,14 +240,14 @@ def get_user_info(user_id):
 				# 作者昵称
 				#'author': video_info['author'],
 				# 作者ID
-				'mid': video_info['mid'],
+				'mid': int(video_info['mid']),
 				# 发布时间
-				'created': video_info['created'],
+				'created': int(video_info['created']),
 				# 时间长度
 				'length': video_info['length'],
 				#'video_review': video_info['video_review'],
 				# 视频av号
-				'aid': video_info['aid'],
+				'aid': int(video_info['aid']),
 				#'hide_click': video_info['hide_click'],
 			})
 
