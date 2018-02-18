@@ -310,19 +310,19 @@ def main():
 
 class DaemonThread(Thread):
 
-		def __init__(self):
-				Thread.__init__(self)
-				self.daemon = True
-				self.name = 'Bilibili Spider Daemon'
+	def __init__(self):
+			Thread.__init__(self)
+			self.daemon = True
+			self.name = 'Bilibili Spider Daemon'
 
 	def run(self):
 		deamon()
 
 class MainThread(Thread):
 
-		def __init__(self):
-				Thread.__init__(self)
-				self.name = 'Bilibili Spider Main'
+	def __init__(self):
+			Thread.__init__(self)
+			self.name = 'Bilibili Spider Main'
 
 	def run(self):
 		main()
