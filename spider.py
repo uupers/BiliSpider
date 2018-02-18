@@ -1,10 +1,8 @@
 #!pyana
 # -*- coding: utf-8 -*-
 
-import json, math
-from collections import deque
+import json, math, queue
 from time import sleep
-from threading import RLock, Thread, Condition
 
 import requests
 
@@ -15,9 +13,7 @@ import pandas as pd
 # *******************************************************
 # 封装 HTTP 请求
 # *******************************************************
-tasks = deque()
-tasks_rlock = RLock()
-tasks_condition_is_empty = Condition(tasks_rlock)
+tasks = queue.Queue()
 is_closing = False
 
 # *******************************************************
@@ -27,14 +23,12 @@ def deamon():
 
 	while not is_closing:
 
+		sleep(1)
+
 		try:
-			with tasks_rlock:
-				while not tasks_condition_is_empty():
-					tasks_rlock.wait()
+			url, hdlr, cb = tasks.get()
 
-				url, hdlr, cb = tasks.pop()
-
-		except IndexError:
+		except queue.Empty:
 			continue
 
 		else:
@@ -44,7 +38,7 @@ def deamon():
 				req = requests.get(url)
 
 			except requests.exceptions.Timeout:
-				tasks.appendleft(url)
+				tasks.put_nowait(url)
 				continue
 
 			text = hdlr(req.text)
@@ -85,23 +79,13 @@ def deamon():
 # *******************************************************
 # 将 HTTP 请求压栈
 # *******************************************************
-def get(*urls, **kwargs):
-
-	callback = kwargs['callback']
-	handler = kwargs['handler'] or (lambda text: text)
+def get(url, handler = (lambda text: text), callback = None):
 
 	if callback is None:
 		raise TypeError('callback is None!')
 
-	if urls and len(urls) > 0:
-		# 遍历压栈
-		for url in urls:
-			global tasks
-			tasks.appendleft({'url': url, 'hdlr': handler, 'cb': callback})
-
-		# 后台线程进入就绪态
-		with tasks_rlock:
-			tasks_rlock.notify()
+	global tasks
+	tasks.put_nowait({'url': url, 'hdlr': handler, 'cb': callback})
 
 # *******************************************************
 # 处理 __jp5 回调
@@ -308,11 +292,11 @@ def get_user_info(user_id):
 '''
 def get_video_info(video_id):
 	url = 'https://api.bilibili.com/x/web-interface/archive/stat?aid={}'.format(video_id)
-	res = get(url)
+	res = get(url, callback=None)
 
 def get_comments(video_id):
 	url = 'http://api.bilibili.cn/feedback?aid={}'.format(video_id)
-	res = get(url)
+	res = get(url, callback=None)
 '''
 
 def main():
@@ -324,14 +308,21 @@ def main():
 		pd.DataFrame([[video['comment'], video['typeid'], video['play'], video['title'], video['created'], video['length'], video['aid'], video['mid']] for video in info['videos']['videos']],
 			columns=['comment', 'typeid', 'play', 'title', 'created', 'length', 'aid', 'mid']).to_csv('datasets/info/video_info.csv')
 
-		sleep(1)
-
 class DaemonThread(Thread):
+
+		def __init__(self):
+				Thread.__init__(self)
+				self.daemon = True
+				self.name = 'Bilibili Spider Daemon'
 
 	def run(self):
 		deamon()
 
 class MainThread(Thread):
+
+		def __init__(self):
+				Thread.__init__(self)
+				self.name = 'Bilibili Spider Main'
 
 	def run(self):
 		main()
