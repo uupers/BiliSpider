@@ -46,10 +46,11 @@
       {
             "tlist":
             {
-                  "number":
+                  "number(分区编号)":
                   {
-                  
-                        "tid":"gvhgv"
+                        "tid": "与number相等",
+                        "count": "该分区下投稿数量",
+                        "name": "分区名称"
                   }
             },
             "vlist":
