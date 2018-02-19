@@ -34,9 +34,9 @@
 2.  `http://space.bilibili.com/ajax/member/getSubmitVideos?mid={mid}&pagesize={page_size}&page={page_number}`
  
 输入：
-*mid => up主id
-*page_size => 单页显示条目数（上限50）
-*page_number => 页码
+* mid => up主id
+* page_size => 单页显示条目数（上限50）
+* page_number => 页码
             
 输出：JSON格式如下
 ```json 
