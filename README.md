@@ -46,10 +46,6 @@
       {
             "tlist":
             {
-                  "number":
-                  {
-                        "tid": "x"
-                  }
             },
             "vlist":
             [
