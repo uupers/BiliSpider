@@ -70,7 +70,7 @@
                         "mid": "作者id",
                         "created": "投稿时间（时间戳）",
                         "length": "视频时长",
-                        "video_review": "弹幕数",
+                        "video_review": "弹幕数",
                         "favorites": "收藏数",
                         "aid": "视频id",
                         "hide_click": "隐藏播放量显示？"
