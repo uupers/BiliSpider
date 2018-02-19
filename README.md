@@ -17,8 +17,7 @@
       输出： JSON格式如下
 ```json
       {
-            ...
-            "data":
+            "data":
             {
                   "aid": "av号",
                   "view": "播放数", 
@@ -45,24 +44,42 @@
             
       输出：JSON格式如下
 ```json
-   {
-      "data":{ 
-            "comment": "评论数",
-            "typeid": "分区类型", 
-            "play": "播放数",
-            "pic": "封面地址",
-            "subtitle": "子标题",
-            "description":"视频描述",
-            "copyright": "1表示原创，2表示搬运",
-            "title": "标题",
-            "review": "未知",
-            "author": "作者",
-            "mid": "作者id",
-            "created": "投稿时间（时间戳）",
-            "length": "视频时长",
-            "video_review": "未知",
-            "favorites": "作者",
-            "aid": "视频id",
-            "hide_click": "未知"
+      {
+            "data":
+                  {
+                        "tlist":
+                              {
+                                    "x":
+                                          {
+                                                "tid": "x => 表示分区记号",
+                                                "count": "该分区下的视频数量",
+                                                "name": "分区名称",
+                                          }
+                              },
+                        "vlist":
+                              [
+                                    {
+                                          "comment": "评论数",
+                                          "typeid": "分区类型", 
+                                          "play": "播放数",
+                                          "pic": "封面地址",
+                                          "subtitle": "子标题",
+                                          "description":"视频描述",
+                                          "copyright": "1表示原创，2表示搬运",
+                                          "title": "标题",
+                                          "review": "未知",
+                                          "author": "作者",
+                                          "mid": "作者id",
+                                          "created": "投稿时间（时间戳）",
+                                          "length": "视频时长",
+                                          "video_review": "未知",
+                                          "favorites": "作者",
+                                          "aid": "视频id",
+                                          "hide_click": "未知"
+                                    }
+                              ],
+                              "count": "总视频投稿数",
+                              "pages": "总显示页数"
+                  }
         }
 ```
