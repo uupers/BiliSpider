@@ -33,23 +33,41 @@ def deamon():
 		sleep(1)
 
 		try:
-			url, hdlr, cb = tasks.get()
+			name, url, hdlr, cb = tasks.get()
+
+			print('处理消息', name)
 
 		except queue.Empty:
 			continue
 
 		else:
 			req = None
+			txt = None
+			res = None
 
 			try:
 				req = requests.get(url)
 
 			except requests.exceptions.Timeout:
 				tasks.put_nowait(url)
+				print('<daemon> requests timeout !')
 				continue
 
-			text = hdlr(req.text)
-			res = json.loads(text)
+			try:
+				txt = hdlr(req.text)
+
+			except:
+				# TODO logging
+				print('<daemon> Failed to handle text !')
+				continue
+
+			try:
+				res = json.loads(txt)
+
+			except:
+				# TODO logging
+				print('<daemon> Failed to parse json !')
+				continue
 
 			try:
 				code = res['code']
@@ -62,6 +80,7 @@ def deamon():
 				except KeyError:
 					cb(None)
 					# TODO logging
+					print('<daemon> `code` & `status` not found !')
 
 				else:
 
@@ -71,6 +90,7 @@ def deamon():
 					else:
 						cb(None)
 						# TODO logging
+						print('<daemon> `status` is invalid [{}] !'.format(status))
 
 			else:
 
@@ -82,17 +102,20 @@ def deamon():
 					#ttl = res['ttl']
 					cb(None)
 					# TODO logging
+					print('<daemon> `code` is invalid [{}] !'.format(code))
 
 # *******************************************************
 # 将 HTTP 请求压栈
 # *******************************************************
-def get(url, handler = (lambda text: text), callback = None):
+def get(url, name = '', handler = (lambda text: text), callback = None):
+
+	print('请求 [{}] 压栈'.format(name))
 
 	if callback is None:
 		raise TypeError('callback is None!')
 
 	global tasks
-	tasks.put_nowait({'url': url, 'hdlr': handler, 'cb': callback})
+	tasks.put_nowait({'name': name, 'url': url, 'hdlr': handler, 'cb': callback})
 
 # *******************************************************
 # 处理 __jp5 回调
@@ -147,7 +170,7 @@ def get_followers(user_id, count_followers):
 
 	for page in range(1, min(5, 1 + math.ceil(count_followers / step))):
 		url = 'https://api.bilibili.com/x/relation/followers?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
-		get(url, handler=handle_jp5, callback=lambda res: followers.extend(handle_relation_data(res['data'])))
+		get(url, name='get_followers', handler=handle_jp5, callback=lambda res: followers.extend(handle_relation_data(res['data'])))
 
 	return followers
 
@@ -160,7 +183,7 @@ def get_followings(user_id, count_followings):
 
 	for page in range(1, min(5, 1 + math.ceil(count_followings / step))):
 		url = 'https://api.bilibili.com/x/relation/followings?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
-		get(url, handler=handle_jp5, callback=lambda res: followings.extend(handle_relation_data(res['data'])))
+		get(url, name='get_followings', handler=handle_jp5, callback=lambda res: followings.extend(handle_relation_data(res['data'])))
 
 	return followings
 
@@ -263,12 +286,12 @@ def get_user_info(user_id):
 	#####################################################
 	# 关系网
 	#####################################################
-	#get(url01, callback=handle_relation)
+	#get(url01, name='get_user_info', callback=handle_relation)
 
 	#####################################################
 	# 稿件信息
 	#####################################################
-	get(url02, callback=handle_information)
+	get(url02, name='get_user_info', callback=handle_information)
 	print('Video Count:', video)
 
 	#####################################################
@@ -278,7 +301,7 @@ def get_user_info(user_id):
 	#####################################################
 	for page in range(1, min(5, 1 + math.ceil(video / step))):
 		url = 'http://space.bilibili.com/ajax/member/getSubmitVideos?mid={}&pagesize={}&page={}'.format(user_id, step, page)
-		get(url, callback=handle_video_list)
+		get(url, name='get_user_info', callback=handle_video_list)
 
 	#####################################################
 	# 存储数据
@@ -303,11 +326,11 @@ def get_user_info(user_id):
 '''
 def get_video_info(video_id):
 	url = 'https://api.bilibili.com/x/web-interface/archive/stat?aid={}'.format(video_id)
-	res = get(url, callback=None)
+	res = get(url, name='get_video_info', callback=None)
 
 def get_comments(video_id):
 	url = 'https://api.bilibili.cn/feedback?aid={}'.format(video_id)
-	res = get(url, callback=None)
+	res = get(url, name="get_comments", callback=None)
 '''
 
 def main():
