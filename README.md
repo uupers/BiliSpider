@@ -16,20 +16,20 @@
       
       输出： JSON格式如下
 ```json
-       "data":
-            {
-                  "aid": "av号",
-                  "view": "播放数", 
-                  "danmuku": "弹幕数",
-                  "reply": "回复数",
-                  "favorite": "收藏数",
-                  "coin": "硬币数",
-                  "share": "分享数",
-                  "now_rank": "未知",
-                  "his_rank": "最高全站日排名（0表示未曾上榜)",
-                  "no_reprint": "0表示默认,1表示未经作者授权禁止转载",
-                  "copyright": "1表示原创,2表示搬运"
-            }
+      "data":
+      {
+            "aid": "av号",
+            "view": "播放数", 
+            "danmuku": "弹幕数",
+            "reply": "回复数",
+            "favorite": "收藏数",
+            "coin": "硬币数",
+            "share": "分享数",
+            "now_rank": "未知",
+            "his_rank": "最高全站日排名（0表示未曾上榜)",
+            "no_reprint": "0表示默认 1表示未经作者授权 禁止转载",
+            "copyright": "1表示原创 2表示搬运"
+      }
  ```
  
 ## 用户页
@@ -43,39 +43,39 @@
       输出：JSON格式如下
 ```json
       "data":
+      {
+            "tlist":
             {
-                  "tlist":
-                        {
-                              "x":
-                                    {
-                                          "tid": "x表示分区记号",
-                                          "count": "该分区下的视频数量",
-                                          "name": "分区名称"
-                                    }
-                        },
-                  "vlist":
-                        [
-                              {
-                                          "comment": "评论数",
-                                          "typeid": "分区类型", 
-                                          "play": "播放数",
-                                          "pic": "封面地址",
-                                          "subtitle": "子标题",
-                                          "description":"视频描述",
-                                          "copyright": "1表示原创,2表示搬运",
-                                          "title": "标题",
-                                          "review": "未知",
-                                          "author": "作者",
-                                          "mid": "作者id",
-                                          "created": "投稿时间（时间戳）",
-                                          "length": "视频时长",
-                                          "video_review": "未知",
-                                          "favorites": "作者",
-                                          "aid": "视频id",
-                                          "hide_click": "未知"
-                               }
-                        ],
-                  "count": "总视频投稿数",
-                  "pages": "总显示页数"
-             }
+                  "x":
+                  {
+                        "tid": "x表示分区记号",
+                        "count": "该分区下的视频数量",
+                        "name": "分区名称"
+                  }
+            },
+            "vlist":
+            [
+                  {
+                        "comment": "评论数",
+                        "typeid": "分区类型", 
+                        "play": "播放数",
+                        "pic": "封面地址",
+                        "subtitle": "子标题",
+                        "description":"视频描述",
+                        "copyright": "1表示原创，2表示搬运",
+                        "title": "标题",
+                        "review": "未知",
+                        "author": "作者",
+                        "mid": "作者id",
+                        "created": "投稿时间（时间戳）",
+                        "length": "视频时长",
+                        "video_review": "未知",
+                        "favorites": "作者",
+                        "aid": "视频id",
+                        "hide_click": "未知"
+                   }
+            ],
+            "count": "总视频投稿数",
+            "pages": "总显示页数"
+       }
 ```
