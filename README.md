@@ -98,20 +98,20 @@ PS: 本API必须使用POST请求, cookie中必须包含key=`bili_jct` 的数据
 {
     "status": true,
     "data": {
-        "mid": "2654670",
-        "name": "LePtC",
-        "approve": false,
-        "sex": "保密",
-        "rank": "10000",
-        "face": "http://i1.hdslb.com/bfs/face/3a2799018636c9c43774dd7bf6685387bb219011.jpg",
+        "mid": "2654670",   //用户信息
+        "name": "LePtC",    //用户名
+        "approve": false,   
+        "sex": "保密",    //性别
+        "rank": "10000",    //等级
+        "face":     "http://i1.hdslb.com/bfs/face/3a2799018636c9c43774dd7bf6685387bb219011.jpg",    //头像
         "DisplayRank": "10000",
-        "regtime": 1382895515,
+        "regtime": 1382895515, //注册时间
         "spacesta": 0,
         "birthday": "0000-01-01",
         "place": "",
         "description": "",
         "article": 0,
-        "sign": "学物理的都好萌～",
+        "sign": "学物理的都好萌～", //签名
         "level_info": {
             "current_level": 5,
             "current_min": 10800,
