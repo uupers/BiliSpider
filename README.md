@@ -46,7 +46,7 @@
       {
             "tlist":
             {
-                  "number":
+                  "number":
                   {
                         "tid": "分区编号",
                         "count": "该分区下投稿数量",
