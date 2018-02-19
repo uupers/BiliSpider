@@ -48,9 +48,7 @@
             {
                   "number":
                   {
-                        "tid": "",
-                        "count": "",
-                        "name": ""
+                        "tid": ""
                   }
             },
             "vlist":
