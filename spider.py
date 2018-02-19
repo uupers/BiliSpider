@@ -349,6 +349,7 @@ class DaemonThread(Thread):
 			self.name = 'Bilibili Spider Daemon'
 
 	def run(self):
+		print('Thread `{}` is running ...'.format(self.name))
 		deamon()
 
 class MainThread(Thread):
@@ -358,6 +359,7 @@ class MainThread(Thread):
 			self.name = 'Bilibili Spider Main'
 
 	def run(self):
+		print('Thread `{}` is running ...'.format(self.name))
 		main()
 
 DaemonThread().start()
