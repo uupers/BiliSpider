@@ -38,7 +38,7 @@
 
       输入：
       * mid => up主id
-      * page_size => 单页显示条目数（上限50）
+      * page_size => 单页显示条目数（上限 100）
       * page_number => 页码
 
       输出：JSON格式如下
@@ -73,7 +73,7 @@
                         "video_review": "未知",
                         "favorites": "收藏数",
                         "aid": "视频id",
-                        "hide_click": "未知"
+                        "hide_click": "隐藏播放量显示？"
                    }
             ],
             "count": "总视频投稿数",
