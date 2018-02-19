@@ -27,8 +27,8 @@
                   "share": "分享数",
                   "now_rank": "未知",
                   "his_rank": "最高全站日排名（0表示未曾上榜)",
-                  "no_reprint": "0表示默认 1表示未经作者授权 禁止转载",
-                  "copyright": "1表示原创 2表示搬运"
+                  "no_reprint": "0表示默认,1表示未经作者授权禁止转载",
+                  "copyright": "1表示原创,2表示搬运"
             }
  ```
  
@@ -62,7 +62,7 @@
                                           "pic": "封面地址",
                                           "subtitle": "子标题",
                                           "description":"视频描述",
-                                          "copyright": "1表示原创，2表示搬运",
+                                          "copyright": "1表示原创,2表示搬运",
                                           "title": "标题",
                                           "review": "未知",
                                           "author": "作者",
