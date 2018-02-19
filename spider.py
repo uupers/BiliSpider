@@ -28,14 +28,18 @@ is_closing = False
 # *******************************************************
 def deamon():
 
-	while not is_closing:
+	print('<daemon> 运行中 ...')
+
+	while True:
+
+		print('<daemon> 循环中 ...')
 
 		sleep(1)
 
 		try:
 			name, url, hdlr, cb = tasks.get()
 
-			print('处理消息', name)
+			print('<daemon> 处理消息', name)
 
 		except queue.Empty:
 			continue
@@ -50,7 +54,7 @@ def deamon():
 
 			except requests.exceptions.Timeout:
 				tasks.put_nowait(url)
-				print('<daemon> requests timeout !')
+				print('<daemon> 请求超时 !')
 				continue
 
 			try:
@@ -58,7 +62,7 @@ def deamon():
 
 			except:
 				# TODO logging
-				print('<daemon> Failed to handle text !')
+				print('<daemon> 失败！未能成功处理消息文本！')
 				continue
 
 			try:
@@ -66,7 +70,7 @@ def deamon():
 
 			except:
 				# TODO logging
-				print('<daemon> Failed to parse json !')
+				print('<daemon> 失败！未能成功解析 JSON！')
 				continue
 
 			try:
@@ -80,7 +84,7 @@ def deamon():
 				except KeyError:
 					cb(None)
 					# TODO logging
-					print('<daemon> `code` & `status` not found !')
+					print('<daemon> 找不到 `code` 或 `status`！')
 
 				else:
 
@@ -90,7 +94,7 @@ def deamon():
 					else:
 						cb(None)
 						# TODO logging
-						print('<daemon> `status` is invalid [{}] !'.format(status))
+						print('<daemon> 非法 `status` [{}] !'.format(status))
 
 			else:
 
@@ -102,7 +106,7 @@ def deamon():
 					#ttl = res['ttl']
 					cb(None)
 					# TODO logging
-					print('<daemon> `code` is invalid [{}] !'.format(code))
+					print('<daemon> 非法 `code` [{}] !'.format(code))
 
 # *******************************************************
 # 将 HTTP 请求压栈
@@ -112,7 +116,7 @@ def get(url, name = '', handler = (lambda text: text), callback = None):
 	print('请求 [{}] 压栈'.format(name))
 
 	if callback is None:
-		raise TypeError('callback is None!')
+		raise TypeError('`callback` 空指针！')
 
 	global tasks
 	tasks.put_nowait({'name': name, 'url': url, 'hdlr': handler, 'cb': callback})
@@ -122,7 +126,7 @@ def get(url, name = '', handler = (lambda text: text), callback = None):
 # *******************************************************
 def handle_jp5(text):
 	if len(text) <= 7:
-		raise AssertionError('handle_jp5 - length error')
+		raise AssertionError('handle_jp5 内容具有错误长度 [{}]！'.format(len(text)))
 
 	prefix, suffix = text[:6], text[-1]
 	if prefix == '__jp5(' and suffix == ')':
@@ -201,7 +205,7 @@ def get_user_info(user_id):
 	video = None
 	videos = []
 
-	print('Scanning user [{}] ...'.format(user_id))
+	print('正在扫描用户 [{}] ...'.format(user_id))
 
 	def handle_relation(res01):
 		nonlocal following
@@ -230,7 +234,7 @@ def get_user_info(user_id):
 		data = res02['data']
 		# 该用户上传的视频 - 数量
 		video = int(data['video'])
-		print('Video Count:', video)
+		print('视频数量：', video)
 		# 该用户订阅的番剧 - 数量
 		#bangumi = int(data['bangumi'])
 		# 该用户创建的频道 - 数量
@@ -292,7 +296,7 @@ def get_user_info(user_id):
 	# 稿件信息
 	#####################################################
 	get(url02, name='get_user_info', callback=handle_information)
-	print('Video Count:', video)
+	print('视频数量：', video)
 
 	#####################################################
 	# 遍历视频
@@ -346,20 +350,20 @@ class DaemonThread(Thread):
 	def __init__(self):
 			Thread.__init__(self)
 			self.daemon = True
-			self.name = 'Bilibili Spider Daemon'
+			self.name = 'Bilibili 爬虫 后台线程'
 
 	def run(self):
-		print('Thread `{}` is running ...'.format(self.name))
+		print('线程 `{}` 正在运行 ...'.format(self.name))
 		deamon()
 
 class MainThread(Thread):
 
 	def __init__(self):
 			Thread.__init__(self)
-			self.name = 'Bilibili Spider Main'
+			self.name = 'Bilibili 爬虫 主线程'
 
 	def run(self):
-		print('Thread `{}` is running ...'.format(self.name))
+		print('线程 `{}` 正在运行 ...'.format(self.name))
 		main()
 
 DaemonThread().start()
