@@ -32,9 +32,9 @@ def deamon():
 
 	while True:
 
-		print('<daemon> 循环中 ...')
+		sleep(0.1)
 
-		sleep(1)
+		print('<daemon> 循环中 ...')
 
 		try:
 			name, url, hdlr, cb = tasks.get()
