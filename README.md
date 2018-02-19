@@ -10,16 +10,16 @@
 # 数据来源
 
 ## 视频页
-1.  `https://api.bilibili.com/x/web-interface/archive/stat?aid={video_id}`
+1.  `https://api.bilibili.com/x/web-interface/archive/stat?aid={video_id}`
 
       输入： video_id => 视频的av号
-      
+
       输出： JSON格式如下
 ```json
       "data":
       {
             "aid": "av号",
-            "view": "播放数", 
+            "view": "播放数",
             "danmuku": "弹幕数",
             "reply": "回复数",
             "favorite": "收藏数",
@@ -31,33 +31,33 @@
             "copyright": "1表示原创 2表示搬运"
       }
  ```
- 
+
 ## 用户页
-2.  `http://space.bilibili.com/ajax/member/getSubmitVideos?mid={mid}&pagesize={page_size}&page={page_number}`
- 
+2.  `http://space.bilibili.com/ajax/member/getSubmitVideos?mid={mid}&pagesize={page_size}&page={page_number}`
+
       输入：
       * mid => up主id
       * page_size => 单页显示条目数（上限50）
       * page_number => 页码
-            
+
       输出：JSON格式如下
 ```json
       "data":
       {
             "tlist":
             {
-                  "number(分区编号)":
+                  "number(分区编号)":
                   {
-                        "tid": "与number相等",
-                        "count": "该分区下投稿数量",
-                        "name": "分区名称"
+                        "tid": "与number相等",
+                        "count": "该分区下投稿数量",
+                        "name": "分区名称"
                   }
             },
             "vlist":
             [
                   {
                         "comment": "评论数",
-                        "typeid": "分区类型", 
+                        "typeid": "分区类型",
                         "play": "播放数",
                         "pic": "封面地址",
                         "subtitle": "子标题",
