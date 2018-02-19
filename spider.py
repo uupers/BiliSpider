@@ -207,6 +207,7 @@ def get_user_info(user_id):
 		data = res02['data']
 		# 该用户上传的视频 - 数量
 		video = int(data['video'])
+		print('Video Count:', video)
 		# 该用户订阅的番剧 - 数量
 		#bangumi = int(data['bangumi'])
 		# 该用户创建的频道 - 数量
