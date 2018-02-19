@@ -48,7 +48,7 @@
             {
                   "number":
                   {
-                        "tid":"分区编号"
+                        "tid":"gvhgv"
                   }
             },
             "vlist":
