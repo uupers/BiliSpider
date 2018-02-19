@@ -80,3 +80,78 @@
             "pages": "总显示页数"
        }
 ```
+## 用户信息
+3. `https://space.bilibili.com/ajax/member/GetInfo`
+
+输入： 
+- Header
+    - Content-Type => 请求类型，eg： `application/x-www-form-urlencoded; charset=UTF-8` 
+    - Referer => 上一跳地址，格式：`https://space.bilibili.com/{mid}/` ，eg：`https://space.bilibili.com/2654670/`
+- Body
+    - mid =>  用户ID， eg：`2654670`
+    - csrf => 防跨域攻击签名，对应`cookie`中 key=`bili_jct` 的数据, eg: `3600d0307c09615eb75ca5ec42ac565a`
+
+PS: 本API必须使用POST请求, cookie中必须包含key=`bili_jct` 的数据
+
+输出：
+```json
+{
+    "status": true,
+    "data": {
+        "mid": "2654670",
+        "name": "LePtC",
+        "approve": false,
+        "sex": "保密",
+        "rank": "10000",
+        "face": "http://i1.hdslb.com/bfs/face/3a2799018636c9c43774dd7bf6685387bb219011.jpg",
+        "DisplayRank": "10000",
+        "regtime": 1382895515,
+        "spacesta": 0,
+        "birthday": "0000-01-01",
+        "place": "",
+        "description": "",
+        "article": 0,
+        "sign": "学物理的都好萌～",
+        "level_info": {
+            "current_level": 5,
+            "current_min": 10800,
+            "current_exp": 14312,
+            "next_exp": 28800
+        },
+        "pendant": {
+            "pid": 0,
+            "name": "",
+            "image": "",
+            "expire": 0
+        },
+        "nameplate": {
+            "nid": 0,
+            "name": "",
+            "image": "",
+            "image_small": "",
+            "level": "",
+            "condition": ""
+        },
+        "official_verify": {
+            "type": -1,
+            "desc": ""
+        },
+        "vip": {
+            "vipType": 1,
+            "vipDueDate": 1491235200000,
+            "dueRemark": "",
+            "accessStatus": 1,
+            "vipStatus": 0,
+            "vipStatusWarn": ""
+        },
+        "toutu": "bfs/space/c9dae917e24b4fc17c4d544caf6b6c0b17f8692b.jpg",
+        "toutuId": 3,
+        "theme": "default",
+        "theme_preview": "",
+        "coins": 0,
+        "im9_sign": "6159621e1268bab1c81824f21bb5ae2c",
+        "playNum": 210014,
+        "fans_badge": false
+    }
+}
+```
