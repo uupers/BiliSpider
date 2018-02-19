@@ -12,6 +12,12 @@ import pandas as pd
 #import matplotlib.pyplot as plt
 
 # *******************************************************
+# 扫描参数
+# *******************************************************
+#MAX_USER_ID = 259899999
+MAX_USER_ID = 4
+
+# *******************************************************
 # 封装 HTTP 请求
 # *******************************************************
 tasks = queue.Queue()
@@ -172,6 +178,8 @@ def get_user_info(user_id):
 	video = None
 	videos = []
 
+	print('Scanning user [{}] ...'.format(user_id))
+
 	def handle_relation(res01):
 		nonlocal following
 		nonlocal follower
@@ -260,6 +268,7 @@ def get_user_info(user_id):
 	# 稿件信息
 	#####################################################
 	get(url02, callback=handle_information)
+	print('Video Count:', video)
 
 	#####################################################
 	# 遍历视频
@@ -296,13 +305,12 @@ def get_video_info(video_id):
 	res = get(url, callback=None)
 
 def get_comments(video_id):
-	url = 'http://api.bilibili.cn/feedback?aid={}'.format(video_id)
+	url = 'https://api.bilibili.cn/feedback?aid={}'.format(video_id)
 	res = get(url, callback=None)
 '''
 
 def main():
 	# 遍历用户 ID
-	MAX_USER_ID = 259899999
 	for user_id in range(2, MAX_USER_ID):
 		info = get_user_info(user_id)
 
