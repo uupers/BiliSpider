@@ -28,28 +28,50 @@ is_closing = False
 # *******************************************************
 def deamon():
 
-	while not is_closing:
+	print('<daemon> 运行中 ...')
 
-		sleep(1)
+	while True:
+
+		sleep(0.1)
+
+		print('<daemon> 循环中 ...')
 
 		try:
-			url, hdlr, cb = tasks.get()
+			name, url, hdlr, cb = tasks.get()
+
+			print('<daemon> 处理消息', name)
 
 		except queue.Empty:
 			continue
 
 		else:
 			req = None
+			txt = None
+			res = None
 
 			try:
 				req = requests.get(url)
 
 			except requests.exceptions.Timeout:
 				tasks.put_nowait(url)
+				print('<daemon> 请求超时 !')
 				continue
 
-			text = hdlr(req.text)
-			res = json.loads(text)
+			try:
+				txt = hdlr(req.text)
+
+			except:
+				# TODO logging
+				print('<daemon> 失败！未能成功处理消息文本！')
+				continue
+
+			try:
+				res = json.loads(txt)
+
+			except:
+				# TODO logging
+				print('<daemon> 失败！未能成功解析 JSON！')
+				continue
 
 			try:
 				code = res['code']
@@ -62,6 +84,7 @@ def deamon():
 				except KeyError:
 					cb(None)
 					# TODO logging
+					print('<daemon> 找不到 `code` 或 `status`！')
 
 				else:
 
@@ -71,6 +94,7 @@ def deamon():
 					else:
 						cb(None)
 						# TODO logging
+						print('<daemon> 非法 `status` [{}] !'.format(status))
 
 			else:
 
@@ -82,24 +106,29 @@ def deamon():
 					#ttl = res['ttl']
 					cb(None)
 					# TODO logging
+					print('<daemon> 非法 `code` [{}] !'.format(code))
+
+	print('<daemon> 循环结束！')
 
 # *******************************************************
 # 将 HTTP 请求压栈
 # *******************************************************
-def get(url, handler = (lambda text: text), callback = None):
+def get(url, name = '', handler = (lambda text: text), callback = None):
+
+	print('请求 [{}] 压栈'.format(name))
 
 	if callback is None:
-		raise TypeError('callback is None!')
+		raise TypeError('`callback` 空指针！')
 
 	global tasks
-	tasks.put_nowait({'url': url, 'hdlr': handler, 'cb': callback})
+	tasks.put_nowait({'name': name, 'url': url, 'hdlr': handler, 'cb': callback})
 
 # *******************************************************
 # 处理 __jp5 回调
 # *******************************************************
 def handle_jp5(text):
 	if len(text) <= 7:
-		raise AssertionError('handle_jp5 - length error')
+		raise AssertionError('handle_jp5 内容具有错误长度 [{}]！'.format(len(text)))
 
 	prefix, suffix = text[:6], text[-1]
 	if prefix == '__jp5(' and suffix == ')':
@@ -147,7 +176,7 @@ def get_followers(user_id, count_followers):
 
 	for page in range(1, min(5, 1 + math.ceil(count_followers / step))):
 		url = 'https://api.bilibili.com/x/relation/followers?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
-		get(url, handler=handle_jp5, callback=lambda res: followers.extend(handle_relation_data(res['data'])))
+		get(url, name='get_followers', handler=handle_jp5, callback=lambda res: followers.extend(handle_relation_data(res['data'])))
 
 	return followers
 
@@ -160,7 +189,7 @@ def get_followings(user_id, count_followings):
 
 	for page in range(1, min(5, 1 + math.ceil(count_followings / step))):
 		url = 'https://api.bilibili.com/x/relation/followings?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
-		get(url, handler=handle_jp5, callback=lambda res: followings.extend(handle_relation_data(res['data'])))
+		get(url, name='get_followings', handler=handle_jp5, callback=lambda res: followings.extend(handle_relation_data(res['data'])))
 
 	return followings
 
@@ -178,7 +207,7 @@ def get_user_info(user_id):
 	video = None
 	videos = []
 
-	print('Scanning user [{}] ...'.format(user_id))
+	print('正在扫描用户 [{}] ...'.format(user_id))
 
 	def handle_relation(res01):
 		nonlocal following
@@ -207,6 +236,7 @@ def get_user_info(user_id):
 		data = res02['data']
 		# 该用户上传的视频 - 数量
 		video = int(data['video'])
+		print('视频数量：', video)
 		# 该用户订阅的番剧 - 数量
 		#bangumi = int(data['bangumi'])
 		# 该用户创建的频道 - 数量
@@ -262,13 +292,13 @@ def get_user_info(user_id):
 	#####################################################
 	# 关系网
 	#####################################################
-	#get(url01, callback=handle_relation)
+	#get(url01, name='get_user_info', callback=handle_relation)
 
 	#####################################################
 	# 稿件信息
 	#####################################################
-	get(url02, callback=handle_information)
-	print('Video Count:', video)
+	get(url02, name='get_user_info', callback=handle_information)
+	print('视频数量：', video)
 
 	#####################################################
 	# 遍历视频
@@ -277,7 +307,7 @@ def get_user_info(user_id):
 	#####################################################
 	for page in range(1, min(5, 1 + math.ceil(video / step))):
 		url = 'http://space.bilibili.com/ajax/member/getSubmitVideos?mid={}&pagesize={}&page={}'.format(user_id, step, page)
-		get(url, callback=handle_video_list)
+		get(url, name='get_user_info', callback=handle_video_list)
 
 	#####################################################
 	# 存储数据
@@ -302,11 +332,11 @@ def get_user_info(user_id):
 '''
 def get_video_info(video_id):
 	url = 'https://api.bilibili.com/x/web-interface/archive/stat?aid={}'.format(video_id)
-	res = get(url, callback=None)
+	res = get(url, name='get_video_info', callback=None)
 
 def get_comments(video_id):
 	url = 'https://api.bilibili.cn/feedback?aid={}'.format(video_id)
-	res = get(url, callback=None)
+	res = get(url, name="get_comments", callback=None)
 '''
 
 def main():
@@ -322,18 +352,20 @@ class DaemonThread(Thread):
 	def __init__(self):
 			Thread.__init__(self)
 			self.daemon = True
-			self.name = 'Bilibili Spider Daemon'
+			self.name = 'Bilibili 爬虫 后台线程'
 
 	def run(self):
+		print('线程 `{}` 正在运行 ...'.format(self.name))
 		deamon()
 
 class MainThread(Thread):
 
 	def __init__(self):
 			Thread.__init__(self)
-			self.name = 'Bilibili Spider Main'
+			self.name = 'Bilibili 爬虫 主线程'
 
 	def run(self):
+		print('线程 `{}` 正在运行 ...'.format(self.name))
 		main()
 
 DaemonThread().start()
