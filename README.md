@@ -10,7 +10,7 @@
 # 数据来源
 1. https://api.bilibili.com/x/web-interface/archive/stat?aid={video_id}
 
-  输入： video_id => 视频的av号
+      输入： video_id => 视频的av号
   
   输出： JSON格式如下
     "data":
