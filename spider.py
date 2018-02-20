@@ -115,7 +115,7 @@ def deamon():
 # *******************************************************
 def get(url, name = '', handler = (lambda text: text), callback = None):
 
-	print('请求 [{}] 压栈'.format(name))
+	print('<main> 请求 [{}] 压栈'.format(name))
 
 	if callback is None:
 		raise TypeError('`callback` 空指针！')
@@ -207,7 +207,7 @@ def get_user_info(user_id):
 	video = None
 	videos = []
 
-	print('正在扫描用户 [{}] ...'.format(user_id))
+	print('<main> 正在扫描用户 [{}] ...'.format(user_id))
 
 	def handle_relation(res01):
 		nonlocal following
@@ -236,7 +236,7 @@ def get_user_info(user_id):
 		data = res02['data']
 		# 该用户上传的视频 - 数量
 		video = int(data['video'])
-		print('视频数量：', video)
+		print('<daemon> 视频数量：', video)
 		# 该用户订阅的番剧 - 数量
 		#bangumi = int(data['bangumi'])
 		# 该用户创建的频道 - 数量
@@ -298,7 +298,7 @@ def get_user_info(user_id):
 	# 稿件信息
 	#####################################################
 	get(url02, name='get_user_info', callback=handle_information)
-	print('视频数量：', video)
+	print('<main> 视频数量：', video)
 
 	#####################################################
 	# 遍历视频
