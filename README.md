@@ -81,77 +81,76 @@
        }
 ```
 ## 用户信息
-3. `https://space.bilibili.com/ajax/member/GetInfo`
+3. `https://api.bilibili.com/x/web-interface/card?mid={mid}`
 
 输入： 
-- Header
-    - Content-Type => 请求类型，eg： `application/x-www-form-urlencoded; charset=UTF-8` 
-    - Referer => 上一跳地址，格式：`https://space.bilibili.com/{mid}/` ，eg：`https://space.bilibili.com/2654670/`
-- Body
-    - mid =>  用户ID， eg：`2654670`
-    - csrf => 防跨域攻击签名，对应`cookie`中 key=`bili_jct` 的数据, eg: `3600d0307c09615eb75ca5ec42ac565a`
-
-PS: 本API必须使用POST请求, cookie中必须包含key=`bili_jct` 的数据
+- mid => 用户ID，eg：1492
 
 输出：
-```json
+```javascript
 {
-    "status": true,
+    "code": 0,
+    "message": "0",
+    "ttl": 1,
     "data": {
-        "mid": "2654670",   //用户信息
-        "name": "LePtC",    //用户名
-        "approve": false,   
-        "sex": "保密",    //性别
-        "rank": "10000",    //等级
-        "face":     "http://i1.hdslb.com/bfs/face/3a2799018636c9c43774dd7bf6685387bb219011.jpg",    //头像
-        "DisplayRank": "10000",
-        "regtime": 1382895515, //注册时间
-        "spacesta": 0,
-        "birthday": "0000-01-01",
-        "place": "",
-        "description": "",
-        "article": 0,
-        "sign": "学物理的都好萌～", //签名
-        "level_info": {
-            "current_level": 5,
-            "current_min": 10800,
-            "current_exp": 14312,
-            "next_exp": 28800
+        "card": {
+            "mid": "1492", //用户ID
+            "name": "Q-kun", //用户昵称
+            "approve": false,
+            "sex": "男",
+            "rank": "10000",
+            "face": "http://i0.hdslb.com/bfs/face/f92360dc5d1bac59020b48d60c827b15a26ed70e.jpg",
+            "DisplayRank": "0",
+            "regtime": 0,
+            "spacesta": 0,
+            "birthday": "",
+            "place": "",
+            "description": "",
+            "article": 0,
+            "attentions": [ //关注列表
+                14164
+            ],
+            "fans": 406568, //粉丝
+            "friend": 16,
+            "attention": 16, //关注数量
+            "sign": "合集点我收藏夹weibo.com/kyusuke ",
+            "level_info": {
+                "current_level": 6,
+                "current_min": 28800,
+                "current_exp": 526773,
+                "next_exp": "-"
+            },
+            "pendant": {
+                "pid": 0,
+                "name": "",
+                "image": "",
+                "expire": 0
+            },
+            "nameplate": {
+                "nid": 0,
+                "name": "",
+                "image": "",
+                "image_small": "",
+                "level": "",
+                "condition": ""
+            },
+            "official_verify": {
+                "type": 0,
+                "desc": "bilibili直播签约主播\r\n"
+            },
+            "vip": {
+                "vipType": 1,
+                "vipDueDate": 1537113600000,
+                "dueRemark": "",
+                "accessStatus": 1,
+                "vipStatus": 1,
+                "vipStatusWarn": ""
+            }
         },
-        "pendant": {
-            "pid": 0,
-            "name": "",
-            "image": "",
-            "expire": 0
-        },
-        "nameplate": {
-            "nid": 0,
-            "name": "",
-            "image": "",
-            "image_small": "",
-            "level": "",
-            "condition": ""
-        },
-        "official_verify": {
-            "type": -1,
-            "desc": ""
-        },
-        "vip": {
-            "vipType": 1,
-            "vipDueDate": 1491235200000,
-            "dueRemark": "",
-            "accessStatus": 1,
-            "vipStatus": 0,
-            "vipStatusWarn": ""
-        },
-        "toutu": "bfs/space/c9dae917e24b4fc17c4d544caf6b6c0b17f8692b.jpg",
-        "toutuId": 3,
-        "theme": "default",
-        "theme_preview": "",
-        "coins": 0,
-        "im9_sign": "6159621e1268bab1c81824f21bb5ae2c",
-        "playNum": 210014,
-        "fans_badge": false
+        "following": true,
+        "archive_count": 332,
+        "article_count": 0,
+        "follower": 406568
     }
 }
 ```
