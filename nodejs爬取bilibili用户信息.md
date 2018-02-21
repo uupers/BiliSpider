@@ -7,6 +7,8 @@
 
 PS: 如果会docker的话，docker中拉一个mongodb的镜像也行，或许还方便点
 
+安装mongodb可以参考： http://blog.csdn.net/qq_33210798/article/details/74332549
+
 ### Coding
 找一个空文件夹，按住shift点鼠标右键，`在此处打开powershell窗口`，输入
 ```bash
