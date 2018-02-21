@@ -1,5 +1,7 @@
 # BiliSpider
 
+【本项目孵化自 [idea #4](https://github.com/orgs/uupers/teams/daily-idea/discussions/4)】
+
 # 简介
 
 这里是 UUPs 爬虫组，目标是为每名创作者的创作之路助力，主要体现在：
@@ -83,7 +85,7 @@
 ## 用户信息
 3. `https://api.bilibili.com/x/web-interface/card?mid={mid}`
 
-输入： 
+输入：
 - mid => 用户ID，eg：1492
 
 输出：
