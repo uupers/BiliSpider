@@ -9,6 +9,12 @@ PS: 如果会docker的话，docker中拉一个mongodb的镜像也行，或许还
 
 安装mongodb可以参考： http://blog.csdn.net/qq_33210798/article/details/74332549
 
+安装过程某处左下角会有勾选mongo compass的选项，默认是勾上的，建议不要动。 
+
+注意在win7系统上mongo可能会出现mongo campass安装不上的情况（进度条不走，同时无法cancel。已经证实不是个例）。 
+
+如果出现这样的情况请通过任务管理器结束程序并结束安装进程。 （理论上来说此时mongo本体应该已经安装上了）
+
 ### Coding
 找一个空文件夹，按住shift点鼠标右键，`在此处打开powershell窗口`(win7系统选择`在此处打开命令窗口`)，输入
 ```bash
