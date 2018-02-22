@@ -352,8 +352,8 @@ def main():
 	for user_id in range(2, MAX_USER_ID):
 		info = get_user_info(user_id)
 
-		pd.DataFrame([[video['comment'], video['typeid'], video['play'], video['title'], video['created'], video['length'], video['aid'], video['mid']] for video in info['videos']['videos']],
-			columns=['comment', 'typeid', 'play', 'title', 'created', 'length', 'aid', 'mid']).to_csv('datasets/info/video_info.csv')
+		#pd.DataFrame([[video['comment'], video['typeid'], video['play'], video['title'], video['created'], video['length'], video['aid'], video['mid']] for video in info['videos']['videos']],
+		#	columns=['comment', 'typeid', 'play', 'title', 'created', 'length', 'aid', 'mid']).to_csv('datasets/info/video_info.csv')
 
 class DaemonThread(Thread):
 
