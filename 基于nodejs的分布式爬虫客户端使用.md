@@ -1,8 +1,8 @@
 ## 基于nodejs的分布式爬虫客户端使用
 
 ### 准备
-我们需要以下工具
-- nodejs[http://nodejs.cn/]
+
+代码的运行需要 nodejs ，没有的可到 [官网](http://nodejs.cn/download/) 下载安装
 
 ### Coding
 找一个空文件夹，按住shift点鼠标右键，`在此处打开cmd/powershell窗口` （没有这个快捷方式的话按 Win+R `cmd` 然后手动 `cd` 过去也是一样的）
@@ -102,18 +102,18 @@ run();
 
 ### 运行
 
-在刚刚打开的powershell窗口中，键入
+在刚刚打开的 cmd/powershell 窗口中，键入
 ```
 node main
 ```
 - 如果程序显示 `Start to fetch member info.` ，说明程序正常运行
-- 如果程序报 `SyntaxError XX`，可能是 nodejs 版本太旧，请到 http://nodejs.cn/download/ 下载最新版安装
+- 如果程序报 `SyntaxError XX`，可能是 nodejs 版本太旧，请到 [官网](http://nodejs.cn/download/) 下载最新版安装
 
-然后，如果程序报 `Unhandled promise rejection` 之类的，请试访问 `45.32.68.44:16123` 看能否看到 `Hello World`，如果不能就 GG，可能是你所在的网络有端口访问限制（校园网之类的）
+然后，如果程序报 `Unhandled promise rejection` 等等，请尝试访问 `45.32.68.44:16123` 看能否看到 `Hello World`，如果不能就 GG，可能是你所在的网络有端口访问限制（校园网之类的）
 
-如果程序显示 `Get package XX, fetch mids [XX001, XY000]` ，说明在正常爬取了
+- 如果程序显示 `Get package XX, fetch mids [XX001, XY000]` ，说明在正常爬取了
 
-如果程序每隔一段时间显示 `Send package XX` 然后继续领新的任务，说明爬虫正顺利地自动化工作ing
+- 如果程序每隔一段时间显示 `Send package XX` 然后继续领新的任务，说明爬虫正顺利地自动化工作ing～
 
 
 数据存放在 `栗子球` 的 VPS 服务器上，想欣赏自己的劳动成果的话，可使用任意mongo客户端连接
