@@ -5,7 +5,9 @@
 - nodejs[http://nodejs.cn/]
 
 ### Coding
-找一个空文件夹，按住shift点鼠标右键，`在此处打开powershell窗口`，输入
+找一个空文件夹，按住shift点鼠标右键，`在此处打开cmd/powershell窗口` （没有这个快捷方式的话按 Win+R `cmd` 然后手动 `cd` 过去也是一样的）
+
+在命令窗口输入
 ```bash
 npm install superagent
 npm install moment
@@ -104,8 +106,21 @@ run();
 ```
 node main
 ```
-如果程序没有报错，就可以在mongodb中欣赏自己的劳动成果了。
+- 如果程序显示 `Start to fetch member info.` ，说明程序正常运行
+- 如果程序报 `SyntaxError XX`，可能是 nodejs 版本太旧，请到 http://nodejs.cn/download/ 下载最新版安装
 
-欣赏方式：使用任意mongo客户端连接`mongodb://spiderrd:spiderrd@45.32.68.44:37017/bilibili_spider`
+然后，如果程序报 `Unhandled promise rejection` 之类的，请试访问 `45.32.68.44:16123` 看能否看到 `Hello World`，如果不能就 GG，可能是你所在的网络有端口访问限制（校园网之类的）
 
+如果程序显示 `Get package XX, fetch mids [XX001, XY000]` ，说明在正常爬取了
+
+如果程序每隔一段时间显示 `Send package XX` 然后继续领新的任务，说明爬虫正顺利地自动化工作ing
+
+
+数据存放在 `栗子球` 的 VPS 服务器上，想欣赏自己的劳动成果的话，可使用任意mongo客户端连接
+
+```
+mongodb://spiderrd:spiderrd@45.32.68.44:37017/bilibili_spider
+```
+
+这个账号是只读权限的，需要写权限账号的话，可以向 `栗子球` 同学要
 
