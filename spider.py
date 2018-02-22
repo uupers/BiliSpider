@@ -181,6 +181,8 @@ def get_followers(user_id, count_followers):
 		url = 'https://api.bilibili.com/x/relation/followers?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
 		get(url, name='get_followers', handler=handle_jp5, callback=lambda res: followers.extend(handle_relation_data(res['data'])))
 
+	# TODO 在数据库中更新条目
+
 	return followers
 
 # *******************************************************
@@ -194,12 +196,15 @@ def get_followings(user_id, count_followings):
 		url = 'https://api.bilibili.com/x/relation/followings?vmid={}&pn={}&ps={}&order=desc&jsonp=jsonp&callback=__jp5'.format(user_id, page, step)
 		get(url, name='get_followings', handler=handle_jp5, callback=lambda res: followings.extend(handle_relation_data(res['data'])))
 
+	# TODO 在数据库中更新条目
+
 	return followings
 
 # *******************************************************
 # 获取该用户基础信息
 # *******************************************************
 def get_user_info(user_id):
+	url00 = 'https://api.bilibili.com/x/web-interface/card?mid={}'.format(user_id)
 	#url01 = 'https://api.bilibili.com/x/relation/stat?vmid={}'.format(user_id)
 	url02 = 'https://api.bilibili.com/x/space/navnum?mid={}'.format(user_id)
 	step = 50
@@ -211,6 +216,20 @@ def get_user_info(user_id):
 	videos = []
 
 	print('<main> 正在扫描用户 [{}] ...'.format(user_id))
+
+	def handle_username(res00):
+		nonlocal name
+
+		data = res00['data']
+		card = data['card']
+		mid = card['mid']
+		# 该用户的昵称
+		name = card['name']
+		# 该用户的头像
+		#face = card['face']
+
+		# TODO 在数据库中更新条目
+		print({'mid': mid, 'name': name})
 
 	def handle_relation(res01):
 		nonlocal following
@@ -253,10 +272,19 @@ def get_user_info(user_id):
 		#playlist = data['playlist']
 		#album = data['album']
 
-	def handle_video_list(res):
+		#################################################
+		# 遍历视频
+		#
+		# 参考：https://space.bilibili.com/ajax/member/getSubmitVideos?mid=6290510&pagesize=50&page=1
+		#################################################
+		for page in range(1, min(5, 1 + math.ceil(video / step))):
+			url = 'http://space.bilibili.com/ajax/member/getSubmitVideos?mid={}&pagesize={}&page={}'.format(user_id, step, page)
+			get(url, name='get_user_info', callback=handle_video_list)
+
+	def handle_video_list(res03):
 		nonlocal videos
 
-		data = res['data']
+		data = res03['data']
 		vlist = data['vlist']
 
 		for video_info in vlist:
@@ -292,6 +320,11 @@ def get_user_info(user_id):
 				#'hide_click': video_info['hide_click'],
 			})
 
+		# TODO 在数据库中更新条目
+		print({'mid': user_id, 'videos': videos})
+
+	get(url00, name='get_user_info', callback=handle_username)
+
 	#####################################################
 	# 关系网
 	#####################################################
@@ -301,34 +334,6 @@ def get_user_info(user_id):
 	# 稿件信息
 	#####################################################
 	get(url02, name='get_user_info', callback=handle_information)
-	print('<main> 视频数量：', video)
-
-	#####################################################
-	# 遍历视频
-	#
-	# 参考：https://space.bilibili.com/ajax/member/getSubmitVideos?mid=6290510&pagesize=50&page=1
-	#####################################################
-	for page in range(1, min(5, 1 + math.ceil(video / step))):
-		url = 'http://space.bilibili.com/ajax/member/getSubmitVideos?mid={}&pagesize={}&page={}'.format(user_id, step, page)
-		get(url, name='get_user_info', callback=handle_video_list)
-
-	#####################################################
-	# 存储数据
-	#####################################################
-	info = {
-		#'followings': {
-		#	'count': following,
-		#	'users': list_followings,
-		#},
-		#'followers': {
-		#	'count': follower,
-		#	'users': list_followers,
-		#},
-		'videos': {
-			'count': video,
-			'videos': videos,
-		},
-	}
 
 	return info
 
