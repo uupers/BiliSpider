@@ -31,7 +31,7 @@ const uploadPackageAsync = (pid, cardList) => {
         pid: pid,
         package: JSON.stringify(cardList)
     }
-    return new Promise((resolve, reject) => superagent.post(url).type('form').send(data).end((err, res) => resolve(res && res.text)))
+    return new Promise((resolve, reject) => superagent.post(url).type('form').send(data).timeout(3000).end((err, res) => resolve(res && res.text)))
 }
 // 爬取用户信息
 const fetchUserInfo = (mid) => {
