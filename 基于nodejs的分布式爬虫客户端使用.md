@@ -14,6 +14,10 @@
 npm install superagent
 npm install moment
 ```
+出现这个就表示安装成功（Warning 可以无视）
+
+<img width="350" src="https://user-images.githubusercontent.com/6371171/36567207-a9797b9c-181d-11e8-822c-fe9acacc1cde.png">
+
 在文件夹里新建一个名为 `main.js` 的文件，编辑输入
 ```javascript
 const superagent = require('superagent');
