@@ -24,75 +24,111 @@ npm install mongodb
 npm install moment
 ```
 在文件夹里新建一个名为 `main.js` 的文件，编辑输入
+
+PS: 当前代码版本已经进行了半自动化处理，无需用户设置mid爬取区间，会自动从0开始爬取数据，并支持断点续爬（你可以随时停下）
 ```javascript
 const superagent = require('superagent');
 var moment = require('moment');
 moment.locale('zh-cn');
 const MongoClient = require('mongodb').MongoClient;
 const mongoUrl = "mongodb://localhost:27017";
-
+// 爬取用户信息
 const fetchUserInfo = (mid, resolve) => {
     const url = `http://api.bilibili.com/x/web-interface/card?mid=${mid}`;
-    return new Promise((resolve, reject) => superagent.get(url).end(function (err, res) {
-        resolve(res && res.text)
-    }))
+    return new Promise((resolve, reject) => superagent.get(url).end((err, res) => resolve(res && res.text)))
 }
-
+// 休眠函数
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
-const connectMongoDB = () => {
+// 区间数组生成 rangeArray(0,4) => [0,1,2,3,4]
+const rangeArray = (start, end) => Array(end - start + 1).fill(0).map((v, i) => i + start)
+// 按千生成区间数组
+const packageArray = packageId => rangeArray(packageId * 1000 + 1, (packageId + 1) * 1000)
+const nowstr = () => moment().format('YYYY-MM-DD HH:mm:ss')
+// 链接mongodb
+const connectMongoDBAsync = () => {
     return new Promise((resolve, reject) => MongoClient.connect(mongoUrl, function (err, db) {
         if (err) throw err;
         console.log("数据库已连接! mongoUrl=" + mongoUrl);
         resolve(db)
     }))
 }
-/**
-* startMid: 开始爬取的mid
-* endMid: 结束爬取的mid (include)
-*/
-const run = async (startMid, endMid) => {
-    const db = await connectMongoDB();
-    const dbo = db.db("bilibili_spider")
+// 批量插入
+const insertListToMongoAsync = (dbo, datalist) => {
+    return new Promise((resolve, reject) => {
+        dbo.collection("member_info").insertMany(datalist, function (err, res) {
+            if (err) throw err;
+            resolve(res)
+        });
+    })
+}
 
-    console.log("==========Start to fetch member info.")
-    const start = process.uptime();
-    let cardList = [] // 数据缓存
-    let failList = [] // 失败记录缓存
-    const step = 1000;
-    for (let i = startMid; i <= endMid; i++) {
-        let rs = await fetchUserInfo(i);
+const getMaxMidAsync = (dbo) => {
+    return new Promise((resolve, reject) => {
+        dbo.collection("member_info").find().sort({
+            mid: -1
+        }).limit(1).toArray(function (err, result) {
+            if (err) throw err;
+            resolve(result && result[0].mid || 1)
+        });
+    })
+}
+// dbo: mongo库操作对象， mids：待处理mid列表，
+const packageFetchInsertAsync = async (dbo, mids) => {
+    const midSize = mids.length
+    let cardList = []
+    let loopCount = 0
+    while (mids.length > 0) {
+        loopCount++
+        // 循环两遍未结束，强行退出
+        if (loopCount > midSize * 2) break
         try {
+            let mid = mids.pop();
+            let rs = await fetchUserInfo(mid);
             if (rs) {
                 const data = JSON.parse(rs).data;
-                const card = data.card;
-                card.mid = i;
-                card.archive_count = data.archive_count;
-                cardList.push(card);
+                data.card.mid = mid;
+                data.card.archive_count = data.archive_count;
+                cardList.push(data.card);
             } else {
-                failList.push(i)
-            }
-            if (i % step === 0) {
-                dbo.collection("member_info").insertMany(cardList, function (err, res) {
-                    if (err) throw err;
-                    console.log(`${moment().format('YYYY-MM-DD HH:mm:ss')} Insert index=${i} success=${res.insertedCount} fails=${failList}`);
-                    cardList = [] //clear the card list
-                    failList = [] //clear the fail list
-                });
-                await sleep(3000)
+                mids.push(mid)
             }
         } catch (error) {
-            failList.push(i)
-            console.error(`mid=${i}`, error)
+            mids.push(mid)
+            console.error(`mid=${mid}`, error)
         }
-        await sleep(90)
+        await sleep(60)
     }
+    await sleep(1000)
+    if (cardList.length === midSize) {
+        return await insertListToMongoAsync(dbo, cardList)
+    } else {
+        console.error(`${nowstr()} failed to fetch info, mids=${mids}`);
+        return null
+    }
+}
+
+const run = async () => {
+    const db = await connectMongoDBAsync();
+    const dbo = db.db("bilibili_spider")
+    console.log(nowstr() + " Start to fetch member info.")
+
+    const maxMid = await getMaxMidAsync(dbo);
+    let pid = Math.floor(maxMid / 1000)
+    console.log(`${nowstr()} fetch max mid=${maxMid} => pid=${pid}`)
+    for (;;) {
+        const mids = packageArray(pid)
+        console.log(`${nowstr()} To fetch mids [${mids[0]}, ${mids[mids.length-1]}]`);
+        const rs = await packageFetchInsertAsync(dbo, mids)
+        if (rs == null) break; //写入失败，停止循环
+        pid++
+    }
+
     // 关闭数据库
     db.close();
-    console.log(`========End job, cost ${process.uptime() - start} s`);
+    console.log(nowstr() + ` End fetch.`);
 }
-// 运行入口，自行修改成需要的爬取区间
-run(100000,200000);
+// start code
+run();
 ```
 
 ### 运行
