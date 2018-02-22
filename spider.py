@@ -1,8 +1,7 @@
 #!pyana
 # -*- coding: utf-8 -*-
 
-import json, math, queue
-from time import sleep
+import json, math, queue, time
 from threading import Thread
 
 import requests
@@ -32,7 +31,11 @@ def deamon():
 
 	while True:
 
-		sleep(0.1)
+		try:
+			time.sleep(0.1)
+
+		except:
+			print('<daemon> 调用 time.sleep 函数时出错！')
 
 		print('<daemon> 循环中 ...')
 
@@ -352,7 +355,7 @@ class DaemonThread(Thread):
 	def __init__(self):
 			Thread.__init__(self)
 			self.daemon = True
-			self.name = 'Bilibili 爬虫 后台线程'
+			self.name = '哔哩哔哩 爬虫 后台线程'
 
 	def run(self):
 		print('线程 `{}` 正在运行 ...'.format(self.name))
@@ -362,7 +365,7 @@ class MainThread(Thread):
 
 	def __init__(self):
 			Thread.__init__(self)
-			self.name = 'Bilibili 爬虫 主线程'
+			self.name = '哔哩哔哩 爬虫 主线程'
 
 	def run(self):
 		print('线程 `{}` 正在运行 ...'.format(self.name))
