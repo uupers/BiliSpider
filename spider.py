@@ -337,8 +337,6 @@ def get_user_info(user_id):
 	#####################################################
 	get(url02, name='get_user_info', callback=handle_information)
 
-	return info
-
 '''
 def get_video_info(video_id):
 	url = 'https://api.bilibili.com/x/web-interface/archive/stat?aid={}'.format(video_id)
