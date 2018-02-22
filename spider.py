@@ -208,6 +208,8 @@ def get_user_info(user_id):
 	#url01 = 'https://api.bilibili.com/x/relation/stat?vmid={}'.format(user_id)
 	url02 = 'https://api.bilibili.com/x/space/navnum?mid={}'.format(user_id)
 	step = 50
+
+	name = None
 	following = None
 	follower = None
 	list_followings = None
