@@ -5,9 +5,11 @@
 代码的运行需要 nodejs ，没有的可到 [官网](http://nodejs.cn/download/) 下载安装
 
 ### Coding
-找一个空文件夹，按住shift点鼠标右键，`在此处打开cmd/powershell窗口` （没有这个快捷方式的话按 Win+R `cmd` 然后手动 `cd` 过去也是一样的）
+1. 找一个空文件夹，按住 `shift` 点鼠标右键，`在此处打开 cmd/powershell 命令窗口`
+1. Win7 可能没有这种快捷方式，按 Win+R `cmd` 然后手动 `cd` 过去也是一样的
+1. 如果你想手动添加这个快捷方式，可以去看 <a href="https://github.com/Hansimov">IAsimov</a> 写的[教程](https://hansimov.github.io/#%E5%9C%A8%E5%8F%B3%E9%94%AE%E4%B8%AD%E5%8A%A0%E5%85%A5%EF%BC%9A%E6%AD%A4%E5%A4%84%E6%89%93%E5%BC%80%20PowerShell)
 
-在命令窗口输入
+然后在命令窗口输入
 ```bash
 npm install superagent
 npm install moment
