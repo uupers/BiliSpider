@@ -1,0 +1,37 @@
+{
+  "name": "bilispider",
+  "version": "0.1.1",
+  "description": "Bilibili spider to crawl data",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "repository": "https://github.com/uupers/BiliSpider",
+  "keywords": [
+    "Bilibili",
+    "Spider"
+  ],
+  "author": "uupers",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "~1.8.2",
+    "electron-builder": "^20.0.8",
+    "electron-packager": "^11.0.1"
+  },
+  "dependencies": {
+    "bulma": "",
+    "moment": "",
+    "superagent": ""
+  },
+  "build": {
+    "appId": "com.uupers.app",
+    "mac": {
+      "category": "crawler"
+    },
+    "win": {
+      "target": "portable"
+    }
+  }
+}

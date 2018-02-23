@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BiliSpider</title>
+    <link rel="stylesheet" href="assets/css/bulma.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+    var shell = require('electron').shell;
+    //open links externally by default
+    $(document).on('click', 'a[href^="http"]', function(event) {
+        event.preventDefault();
+        shell.openExternal(this.href);
+    });
+  </script>
+  </head>
+  
+  <body>
+
+      <section class="hero has-text-centered">
+          <div class="hero-body has-text-centered">
+            <div class="container">
+              <h1 class="title is-1">
+                BiliSpider
+              </h1>
+              
+              <div class="notification text-centered" style="margin-bottom:2em;">
+                <p style="margin-bottom:2em;">
+                  一个用来获取 Bilibili 用户数据的爬虫
+                </p>
+                <pre style="min-height:1.25em;line-height: 1;" type="text" readonly>https://github.com/uupers/uupers.github.io</pre>
+                
+                  
+                  
+                </div>
+
+                
+                     <!-- BY UUPERS            -->
+              
+              
+            </div>
+            
+            <div class="content">
+
+            <div class="text-centered">
+                <button class = "button is-dark is-centered" id = "btn-run">贡献你的计算力</button>
+            </div>
+          </div>
+          </div>
+        </section>
+
+<section>        
+  <div>
+    <pre id="log-process">
+      LOG: <br>
+    </pre>
+    </div>
+  </section>
+
+
+
+        <script src = "./bilicrawler.js" ></script>
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js')
+    </script>
+  </body>
+</html>
