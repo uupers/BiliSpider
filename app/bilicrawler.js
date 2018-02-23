@@ -1,4 +1,4 @@
-const logit = document.getElementById('log-process')
+const loghtml = document.getElementById('log-process')
 
 const superagent = require('superagent');
 var moment = require('moment');
@@ -80,8 +80,7 @@ const packageFetchInsertAsync = async (pid, mids) => {
         console.log(`${nowstr()} Send package ${pid}`);
     } else {
         console.error(`${nowstr()} failed to fetch info, mids=${mids}`);
-        logit.innerHTML += `${nowstr()} failed to fetch info, mids=${mids}`; 
-        logit.innerHTML += "<br>";
+        logit(`${nowstr()} failed to fetch info, mids=${mids}`); 
     }
 }
 
@@ -94,16 +93,46 @@ const run = async () => {
 
         const mids = packageArray(pid)
         console.log(`${nowstr()} Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length-1]}]`);
-        logit.innerHTML += `${nowstr()} Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length-1]}]`; 
-        logit.innerHTML += "<br>";
+        
+        logit(`${nowstr()} Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length-1]}]`); 
 
         await packageFetchInsertAsync(pid, mids)
     }
     console.log(nowstr() + ` End fetch.`);
-    logit.innerHTML += nowstr() + ` End fetch.`;
-    logit.innerHTML += "<br>"
+    logit(nowstr() + ` End fetch.`);
+    
 }
 // start code
 // run();
 
-document.querySelector('#btn-run').addEventListener('click', run)
+
+
+// Define function that export result to html tag
+function logit(elem) {
+    loghtml.insertAdjacentHTML("afterbegin",elem + "<br>")
+}
+
+
+function clickDisable(){
+    document.querySelector('#btn-run').disabled = true;
+    // alert("Button has been disabled.");
+}
+function clickChange()  {
+    var text = document.querySelector('#btn-run').firstChild;
+    text.data = text.data == "已经在爬数据了" ? "贡献你的计算力" : "已经在爬数据了";
+ }
+
+
+// Function used to run test click
+function runTest() {
+    logit("Clicked")
+}
+
+function caction (){
+    runTest();
+    clickDisable();
+    clickChange();
+}
+
+// link button action to function
+document.querySelector('#btn-run').addEventListener('click', caction)
