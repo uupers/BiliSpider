@@ -56,7 +56,7 @@ const nowstr = () => moment().format('YYYY-MM-DD HH:mm:ss')
 //  mids：待处理mid列表，
 const packageFetchInsertAsync = async (pid, mids) => {
     const BAN_IP_SLEEP_MS = 1000 * 60 * 10; // 10min
-    const NORMAL_SLEEP_MS = 200; //ms
+    const NORMAL_SLEEP_MS = 150; //ms
     let sleepms = NORMAL_SLEEP_MS
 
     const midSize = mids.length
@@ -94,7 +94,7 @@ const packageFetchInsertAsync = async (pid, mids) => {
             break // 结束本次任务，尝试下个任务
         }
     }
-    await sleep(5000)
+    await sleep(12000)
     if (cardList.length === midSize) {
         await uploadPackageAsync(pid, cardList)
         console.log(`${nowstr()} Send package ${pid}`);
