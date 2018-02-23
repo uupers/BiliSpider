@@ -156,3 +156,76 @@
     }
 }
 ```
+
+
+## 二级分区视频分页数据（投稿时间逆序）
+4.  `http://api.bilibili.com/x/web-interface/newlist?rid={rid}&pn={pn}&ps={ps}`
+
+      输入：
+      * rid => 二级分区编号
+      * pn => 页数
+      * ps => 单页显示条目数（上限 50）
+
+      输出：JSON格式如下
+```json
+      "data":
+      {
+            "archives":
+            [
+                  {
+                        "aid": "视频编号",
+                        "videos": "或许是分P数？",
+                        "tid": "二级分区编号",
+                        "tname": "二级分区名称",
+                        "pic": "封面地址",
+                        "copyright": "1表示原创 2表示搬运",
+                        "pubdate": "未知含义时间戳",
+                        "ctime": "未知含义时间戳",
+                        "desc": "视频简介",
+                        "title": "标题",
+                        "state": "0未知",
+                        "attribute": "49152未知",
+                        "duration": "46未知",
+                        "rights": 
+                              {
+                                    "bp":"0未知",
+                                    "elec":"是否开启充电",
+                                    "download":"是否允许下载",
+                                    "movie":"是否是电影？",
+                                    "pay":"？",
+                                    "hd5":"？",
+                                    "no_reprint":"？"
+                              },
+                        "owner":
+                              {
+                                    {
+                                          "mid" "UP编号",
+                                          "name" "UP名称",
+                                          "face" "头像地址"
+                                    }
+                              }
+                        "stat": 
+                              {
+                                    "aid": "视频编号",
+                                    "view": "播放数",
+                                    "danmaku": "弹幕数",
+                                    "reply": "评论数"
+                                    "favorite": "收藏数",
+                                    "coin": "硬币数",
+                                    "share": "分享数",
+                                    "now_rank": "当前全站日排名",
+                                    "his_rank": "最高全站日排名",
+                                    "like": "点赞数"
+                              }, 
+                        "dynamic": "未知"
+                        }
+                   }
+            ],
+            "page":
+            {
+                  "count":"分区有效稿件总量",
+                  "num":"与pn相等",
+                  "size":"与ps相等"
+            }
+       }
+```
