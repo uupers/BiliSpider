@@ -23,7 +23,7 @@
       {
             "aid": "av号",
             "view": "播放数",
-            "danmuku": "弹幕数",
+            "danmaku": "弹幕数",
             "reply": "回复数",
             "favorite": "收藏数",
             "coin": "硬币数",
