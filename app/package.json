@@ -29,6 +29,9 @@
     "appId": "com.uupers.app",
     "mac": {
       "category": "crawler"
+    },
+    "win": {
+      "target": "portable"
     }
   }
 }
