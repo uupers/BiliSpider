@@ -62,27 +62,33 @@ const packageFetchInsertAsync = async (pid, mids) => {
         loopCount++
         // 循环两遍未结束，强行退出
         if (loopCount > midSize * 2) break
+        let mid = mids.pop();
         try {
-            let mid = mids.pop();
-            let rs = await fetchUserInfo(mid);
-            if (rs) {
-                const data = JSON.parse(rs).data;
-                data.card.mid = mid;
-                data.card.archive_count = data.archive_count;
-                data.card.ctime = nowstr()
-                cardList.push(data.card);
-            } else {
+            fetchUserInfo(mid).then(rs => {
+                if (rs) {
+                    const data = JSON.parse(rs).data;
+                    data.card.mid = mid;
+                    data.card.archive_count = data.archive_count;
+                    data.card.ctime = nowstr()
+                    cardList.push(data.card);
+                } else {
+                    mids.push(mid)
+                }
+            }).catch(err => {
                 mids.push(mid)
-            }
+                console.error(`mid=${mid}`, err)
+            });
+            
         } catch (error) {
             mids.push(mid)
             console.error(`mid=${mid}`, error)
         }
-        await sleep(60)
+        await sleep(210) //ms
     }
-    await sleep(1000)
+    // await sleep(1000)
     if (cardList.length === midSize) {
         await uploadPackageAsync(pid, cardList)
+        console.log(`${nowstr()} Send package ${pid}`);
     } else {
         console.error(`${nowstr()} failed to fetch info, mids=${mids}`);
     }
@@ -97,8 +103,7 @@ const run = async () => {
 
         const mids = packageArray(pid)
         console.log(`${nowstr()} Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length-1]}]`);
-        const rs = await packageFetchInsertAsync(pid, mids)
-        console.log(`${nowstr()} Send package ${pid}`);
+        await packageFetchInsertAsync(pid, mids)
     }
     console.log(nowstr() + ` End fetch.`);
 }
