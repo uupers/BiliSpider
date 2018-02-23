@@ -76,7 +76,7 @@ const packageFetchInsertAsync = async (pid, mids) => {
                 }
             }).catch(err => {
                 mids.push(mid)
-                console.error(`mid=${mid}`, error)
+                console.error(`mid=${mid}`, err)
             });
             
         } catch (error) {
