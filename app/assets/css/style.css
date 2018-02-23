@@ -4,3 +4,9 @@
 .text-centered {
    text-align: center;
 }
+
+#log-pre {
+   height: auto;
+   max-height: 200px;
+   overflow: auto
+}
