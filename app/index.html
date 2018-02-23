@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BiliSpider</title>
+    <link rel="stylesheet" href="assets/css/bulma.css">
+  </head>
+  
+  <body>
+
+      <section class="hero">
+          <div class="hero-body">
+            <div class="container">
+              <h1 class="title is-1 is-centered">
+                Bilibili 大蜘蛛
+              </h1>
+              <h2 class="subtitle is-centered">
+                     <!-- BY UUPERS            -->
+              </h2>
+
+            </div>
+            <div is-centered>
+                <button class = "button is-dark is-centered" id = "btn-run">贡献你的计算力</button>
+            </div>
+          </div>
+        </section>
+
+<section>        
+  <div>
+    <pre id="log-process">
+      LOG: <br>
+    </pre>
+    </div>
+  </section>
+
+
+        <script src = "./bilicrawler.js" ></script>
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js')
+    </script>
+  </body>
+</html>

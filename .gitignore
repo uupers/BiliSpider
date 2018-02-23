@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# electron
+
+node_modules/
+app/node_modules/
+app/dist/
