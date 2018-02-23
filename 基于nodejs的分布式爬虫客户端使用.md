@@ -62,8 +62,8 @@ const packageFetchInsertAsync = async (pid, mids) => {
         loopCount++
         // 循环两遍未结束，强行退出
         if (loopCount > midSize * 2) break
+        let mid = mids.pop();
         try {
-            let mid = mids.pop();
             fetchUserInfo(mid).then(rs => {
                 if (rs) {
                     const data = JSON.parse(rs).data;
@@ -81,8 +81,9 @@ const packageFetchInsertAsync = async (pid, mids) => {
             
         } catch (error) {
             mids.push(mid)
+            console.error(`mid=${mid}`, error)
         }
-        await sleep(200) //ms
+        await sleep(210) //ms
     }
     // await sleep(1000)
     if (cardList.length === midSize) {
