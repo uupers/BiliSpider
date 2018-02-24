@@ -20,6 +20,7 @@ npm install moment
 
 在文件夹里新建一个名为 `main.js` 的文件，编辑输入
 ```javascript
+//version 20180225-1
 const superagent = require('superagent');
 var moment = require('moment');
 moment.locale('zh-cn');
@@ -94,12 +95,12 @@ const packageFetchInsertAsync = async (pid, mids) => {
             break // 结束本次任务，尝试下个任务
         }
     }
-    await sleep(12000)
+    await sleep(10000)
     if (cardList.length === midSize) {
         await uploadPackageAsync(pid, cardList)
         console.log(`${nowstr()} Send package ${pid}`);
     } else {
-        console.error(`${nowstr()} failed to fetch info, mids=${mids}`);
+        console.error(`${nowstr()} failed to fetch info，finished/all=${cardList.length}/${midSize}, mids=${mids}`);
     }
 }
 
