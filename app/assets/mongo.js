@@ -30,10 +30,5 @@ MongoClient.connect(url, function (err, client) {
 }); 
 
 
-console.log("msg")
-console.log(msg.objects)
-console.log("msg 2")
-console.log(msg)
-
 
 

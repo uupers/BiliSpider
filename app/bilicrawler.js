@@ -1,5 +1,9 @@
 const loghtml = document.getElementById('log-process')
 
+///////////////////
+// For Kernel
+///////////////////
+
 //version 20180225-1
 const superagent = require('superagent');
 var moment = require('moment');
@@ -107,7 +111,7 @@ const run = async () => {
 // run();
 
 ///////////////////
-// 
+// For Electron
 ///////////////////
 
 // Define function that export result to html tag
