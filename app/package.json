@@ -1,6 +1,6 @@
 {
   "name": "bilispider",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "Bilibili spider to crawl data",
   "main": "main.js",
   "scripts": {
@@ -21,8 +21,10 @@
     "electron-packager": "^11.0.1"
   },
   "dependencies": {
+    "assert": "^1.4.1",
     "bulma": "",
     "moment": "",
+    "mongodb": "^3.0.3",
     "superagent": ""
   },
   "build": {

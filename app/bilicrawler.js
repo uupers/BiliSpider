@@ -1,5 +1,6 @@
 const loghtml = document.getElementById('log-process')
 
+//version 20180225-1
 const superagent = require('superagent');
 var moment = require('moment');
 moment.locale('zh-cn');
@@ -74,13 +75,13 @@ const packageFetchInsertAsync = async (pid, mids) => {
             break // 结束本次任务，尝试下个任务
         }
     }
-    await sleep(12000)
+    await sleep(10000)
     if (cardList.length === midSize) {
         await uploadPackageAsync(pid, cardList)
         console.log(`${nowstr()} Send package ${pid}`);
     } else {
-        console.error(`${nowstr()} failed to fetch info, mids=${mids}`);
-        logit(`${nowstr()} failed to fetch info, mids=${mids}`); 
+        console.error(`${nowstr()} failed to fetch info，finished/all=${cardList.length}/${midSize}, mids=${mids}`);
+        logit(`${nowstr()} failed to fetch info，finished/all=${cardList.length}/${midSize}, mids=${mids}`); 
     }
 }
 
@@ -105,7 +106,9 @@ const run = async () => {
 // start code
 // run();
 
-
+///////////////////
+// 
+///////////////////
 
 // Define function that export result to html tag
 function logit(elem) {

@@ -6,14 +6,6 @@
     <title>BiliSpider</title>
     <link rel="stylesheet" href="assets/css/bulma.css">
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- <script>
-    var shell = require('electron').shell;
-    //open links externally by default
-    $(document).on('click', 'a[href^="http"]', function(event) {
-        event.preventDefault();
-        shell.openExternal(this.href);
-    });
-  </script> -->
   </head>
   
   <body>
@@ -42,11 +34,10 @@
             </div>
             
             <div class="content">
-
-            <div class="text-centered">
-                <button class = "button is-dark is-centered" id = "btn-run">贡献你的计算力</button>
+                  <div class="text-centered">
+                      <button class = "button is-dark is-centered" id = "btn-run">贡献你的计算力</button>
+                  </div>
             </div>
-          </div>
           </div>
         </section>
 
@@ -55,14 +46,27 @@
       <span class="tag is-light">LOG:</span>
     <pre id="log-process">
       
-    </pre
+    </pre>
     </div>
-  </section>
+</section>
+
+<section>
+
+
+  <div>
+      <span class="tag is-light">Database:</span>
+    <div id="data-html">
+        {{ dataSize }}
+    </div>
+    </div>
+</section>
 
 
 
-        <script src = "./bilicrawler.js" ></script>
         <script src = "./assets/vue/vue.min.js" ></script>
+        <script src = "./bilicrawler.js" ></script>
+        <script src = "./assets/mongo.js" ></script>
+        <script src = "./assets/vue-app.js" ></script>
     <script>
       // You can also require other files to run in this process
       require('./renderer.js')
