@@ -129,7 +129,7 @@ function runTest() {
 }
 
 function caction (){
-    runTest();
+    run();
     clickDisable();
     clickChange();
 }
