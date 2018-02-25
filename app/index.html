@@ -40,33 +40,25 @@
             </div>
           </div>
         </section>
-
-<section>        
-  <div id="log-pre">
-      <span class="tag is-light">LOG:</span>
-    <pre id="log-process">
+        
+        <section>
+        <div class="columns is-mobile">
+          <div class="column is-two-thirds" id="log-pre">
+            <span class="tag is-light">LOG:</span>
+              <pre id="log-process"></pre>
+          </div>
+     
+          <div class="column" id="data-html">
+              <span class="tag is-light">Database:</span>
+              <pre id="db-info"></pre> 
+          </div>
+        </div>
+      </section>
       
-    </pre>
-    </div>
-</section>
-
-<!-- <section>
 
 
-  <div>
-      <span class="tag is-light">Database:</span>
-    <div id="data-html">
-        {{ loaded }}
-    </div>
-    </div>
-</section> -->
-
-
-
-        <script src = "./assets/vue/vue.min.js" ></script>
         <script src = "./bilicrawler.js" ></script>
-        <!-- <script src = "./assets/mongo.js" ></script> -->
-        <!-- <script src = "./assets/vue-app.js" ></script> -->
+        <script src = "./assets/mongo.js" ></script>
     <script>
       // You can also require other files to run in this process
       require('./renderer.js')
