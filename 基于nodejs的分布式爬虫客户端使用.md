@@ -136,12 +136,15 @@ node main
 
 - 如果程序每隔一段时间显示 `Send package XX` 然后继续领新的任务，说明爬虫正顺利地自动化工作ing～
 
+### 数据访问
 
-数据存放在 `栗子球` 的 VPS 服务器上，想欣赏自己的劳动成果的话，可使用任意mongo客户端连接
+数据存放在 `栗子球` 的 VPS 服务器上，想欣赏自己的劳动成果的话，可使用任意mongo客户端(e.g. [mongodb compass](https://www.mongodb.com/download-center#compass)连接
 
 ```
 mongodb://spiderrd:spiderrd@45.32.68.44:37017/bilibili_spider
 ```
 
 这个账号是只读权限的，需要写权限账号的话，可以向 `栗子球` 同学要
+
+ps:使用python远程访问请参考connect_to_remote_mongodb_demo.ipynb
 
