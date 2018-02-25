@@ -10,3 +10,12 @@
    max-height: 200px;
    overflow: auto
 }
+
+#data-html {
+   height: auto;
+   max-height: 200px;
+   overflow: auto
+}
+.db-span {
+   display: inline-block;
+}
