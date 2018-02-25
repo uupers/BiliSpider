@@ -6,16 +6,19 @@
 }
 
 #log-pre {
-   height: auto;
+   height: 200px;
    max-height: 200px;
+   min-height: 200px;
    overflow: auto
 }
 
+
 #data-html {
-   height: auto;
+   height: 200px;
    max-height: 200px;
+   min-height: 200px;
    overflow: auto
 }
 .db-span {
-   display: inline-block;
+   display: block;
 }
