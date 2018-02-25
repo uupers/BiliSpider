@@ -146,5 +146,5 @@ mongodb://spiderrd:spiderrd@45.32.68.44:37017/bilibili_spider
 
 这个账号是只读权限的，需要写权限账号的话，可以向 `栗子球` 同学要
 
-ps : 使用python远程访问请参考connect_to_remote_mongodb_demo.ipynb
+ps : 使用python远程访问请参考[connect_to_remote_mongodb_demo.ipynb](https://github.com/uupers/BiliSpider/blob/master/connect_to_remote_mongodb_demo.ipynb)
 
