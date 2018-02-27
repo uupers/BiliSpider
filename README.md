@@ -11,4 +11,4 @@
 3. 数据分析与科研：根据获取到的有效数据，对B站推广机制，用户习惯等进行研究，为创作者提供推广经验
 
 # 数据来源
-目前已经迁移到本项目[Wiki](https://github.com/uupers/BiliSpider/wik)页面
+目前已经迁移到本项目[Wiki](https://github.com/uupers/BiliSpider/wiki)页面
