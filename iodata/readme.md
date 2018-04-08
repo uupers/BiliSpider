@@ -6,4 +6,4 @@ include 目录下，将 Mathematica\11.3\SystemFiles\Libraries\Windows-x86-64 �
 如果没有安装，直接可以用编译好的dll, 即 x64\Release\iodata.dll 这个文件，需要保证自己是win10系统
 
 # 接口的使用
-参考例子.nb
+参考"例子.nb"
