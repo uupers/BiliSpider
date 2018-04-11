@@ -1,0 +1,20 @@
+extends: "standard"
+plugins:
+  - "standard"
+  - "promise"
+  - "node"
+rules:
+  indent:
+    - "warn"
+    - 4
+  semi:
+    - "warn"
+    - "always"
+  semi-style:
+    - "warn"
+    - "last"
+  semi-spacing:
+    - "error"
+    -
+      before: false
+      after: true

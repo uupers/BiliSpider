@@ -3,7 +3,7 @@ const moment = require('moment');
 moment.locale('zh-cn');
 
 const {
-    URL_GET_PACKAGE, URL_UPLOAD_PACKAGE, URL_USER_INFO
+    URL_GET_PACKAGE, URL_USER_INFO
 } = require('./constants');
 
 /**
