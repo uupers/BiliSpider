@@ -1,0 +1,11 @@
+language: node_js
+
+node_js:
+  - "lts/*"
+
+install:
+  - "cd node-spider-dist"
+  - "npm install"
+
+script:
+  - "npm run lint"
