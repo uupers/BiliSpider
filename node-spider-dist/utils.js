@@ -61,6 +61,22 @@ const setMock = (mockModule) => {
     return mockModule(superagent);
 };
 
+const OT = {
+    log: console.log,
+    info: console.info,
+    warn: console.warn,
+    error: console.error
+};
+
+const setOutput = (obj) => {
+    for (const method of Object.keys(OT)) {
+        const fn = obj[method];
+        if (fn && typeof fn === 'function') {
+            OT[method] = fn;
+        }
+    }
+};
+
 module.exports = {
     sleep,
     httpGetAsync,
@@ -69,5 +85,7 @@ module.exports = {
     getPackageAsync,
     uploadPackageAsync,
     fetchUserInfo,
-    setMock
+    setMock,
+    setOutput,
+    OT
 };
