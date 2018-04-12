@@ -105,3 +105,4 @@ ENV/
 node_modules
 app/dist/
 package-lock.json
+yarn.lock
