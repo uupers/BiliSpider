@@ -26,7 +26,7 @@ test('Default', async (t) => {
         const body = {
             pid: req.body.pid,
             package: JSON.parse(req.body.package)
-        }
+        };
         t.is(body.pid, 1234);
         t.is(body.package.length, 1000);
         t.true((Date.now() - startTime) >= SLEEP_NORMAL * 1000);

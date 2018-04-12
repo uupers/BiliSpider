@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "lint": "eslint client.js spider.js utils.js constants.js test/**",
+    "lint": "eslint client.js spider.js utils.js constants.js test/**/*.js",
     "test": "ava"
   },
   "author": "Nintha",
