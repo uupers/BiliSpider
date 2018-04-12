@@ -2,23 +2,12 @@
  * version:2018-03-03
  * 1. 提升稳定性：爬取用户信息时的异常进行处理
  */
-const superagent = require('superagent');
-
 const {
-    sleep, getPackageAsync, fetchUserInfo, nowStr, packageArray
+    sleep, getPackageAsync, fetchUserInfo, nowStr, packageArray,
+    uploadPackageAsync
 } = require('./utils');
-const {
-    SLEEP_BAN_IP, SLEEP_NORMAL, URL_UPLOAD_PACKAGE
-} = require('./constants');
 
-// 上传任务结果
-const uploadPackageAsync = (pid, cardList) => {
-    const data = {
-        pid: pid,
-        package: JSON.stringify(cardList)
-    };
-    return superagent.post(URL_UPLOAD_PACKAGE).type('form').send(data).then();
-};
+const { SLEEP_BAN_IP, SLEEP_NORMAL } = require('./constants');
 
 //  mids：待处理mid列表，
 const packageFetchInsertAsync = async (pid, mids) => {

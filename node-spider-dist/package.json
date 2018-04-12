@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "lint": "eslint client.js spider.js utils.js constants.js"
+    "lint": "eslint client.js spider.js utils.js constants.js test/**",
+    "test": "ava"
   },
   "author": "Nintha",
   "license": "GNU General Public License v3.0",
@@ -17,11 +18,13 @@
     "superagent": "^3.8.2"
   },
   "devDependencies": {
+    "ava": "^0.25.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-standard": "^3.0.1",
+    "superagent-mocker": "^0.5.2"
   }
 }

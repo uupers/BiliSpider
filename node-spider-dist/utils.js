@@ -3,7 +3,7 @@ const moment = require('moment');
 moment.locale('zh-cn');
 
 const {
-    URL_GET_PACKAGE, URL_USER_INFO
+    URL_GET_PACKAGE, URL_USER_INFO, URL_UPLOAD_PACKAGE
 } = require('./constants');
 
 /**
@@ -41,11 +41,24 @@ const packageArray = (packageId) => {
  */
 const getPackageAsync = () => httpGetAsync(URL_GET_PACKAGE);
 
+// 上传任务结果
+const uploadPackageAsync = (pid, cardList) => {
+    const data = {
+        pid: pid,
+        package: JSON.stringify(cardList)
+    };
+    return superagent.post(URL_UPLOAD_PACKAGE).type('form').send(data).then();
+};
+
 /**
  * 爬取用户信息
  */
 const fetchUserInfo = (mid) => {
     return httpGetAsync(URL_USER_INFO, { query: [{ mid }] });
+};
+
+const setMock = (mockModule) => {
+    return mockModule(superagent);
 };
 
 module.exports = {
@@ -54,5 +67,7 @@ module.exports = {
     nowStr,
     packageArray,
     getPackageAsync,
-    fetchUserInfo
+    uploadPackageAsync,
+    fetchUserInfo,
+    setMock
 };
