@@ -1,6 +1,6 @@
 /**
- * version:2018-03-03
- * 1. 提升稳定性：爬取用户信息时的异常进行处理
+ * version:2018-04-16
+ * 1. 针对B站API的限制性调整，降低爬取速度，目前 3.5 min/pack
  */
 const superagent = require('superagent');
 var moment = require('moment');
@@ -30,7 +30,7 @@ const nowstr = () => moment().format('YYYY-MM-DD HH:mm:ss')
 //  mids：待处理mid列表，
 const packageFetchInsertAsync = async (pid, mids) => {
     const BAN_IP_SLEEP_MS = 1000 * 60 * 10; // 10min
-    const NORMAL_SLEEP_MS = 150; //ms
+    const NORMAL_SLEEP_MS = 200; //ms
     let sleepms = NORMAL_SLEEP_MS
 
     const midSize = mids.length
@@ -40,20 +40,15 @@ const packageFetchInsertAsync = async (pid, mids) => {
     while (mids.length > 0) {
         loopCount++
         // 循环两遍未结束，强行退出
-        if (loopCount > midSize * 2){
-            console.log(`循环次数已到${loopCount}次，结束循环`);
+        if (loopCount > midSize * 2) {
+            sleepms = BAN_IP_SLEEP_MS //IP进小黑屋了
+            console.log(`循环次数已到${loopCount}次，结束循环, 爬虫程序会在${sleepms / 60000}min后继续`);
             break
         }
         let mid = mids.pop();
         processings[mid] = true
         fetchUserInfo(mid).then(rs => {
             if (!rs) throw "Empty response"
-            if (rs.indexOf('DOCTYPE html') >= 0) {
-                sleepms = BAN_IP_SLEEP_MS //IP进小黑屋了
-                mids.push(mid)
-                console.error(`${nowstr()} oops，你的IP进小黑屋了，爬虫程序会在10min后继续`)
-                return
-            }
             const data = JSON.parse(rs).data;
             data.card.mid = mid;
             data.card.archive_count = data.archive_count;
@@ -61,6 +56,12 @@ const packageFetchInsertAsync = async (pid, mids) => {
             cardList.push(data.card);
             delete processings[mid]
         }).catch(err => {
+            if (err.message.indexOf('Forbidden') >= 0) {
+                sleepms = BAN_IP_SLEEP_MS //IP进小黑屋了
+                mids.push(mid)
+                console.error(`${nowstr()} oops，你的IP进小黑屋了，爬虫程序会在${sleepms / 60000}min后继续`)
+                return
+            }
             mids.push(mid)
             delete processings[mid]
             console.error(`${nowstr()} mid=${mid}`, err.message)
@@ -71,7 +72,7 @@ const packageFetchInsertAsync = async (pid, mids) => {
         if (trueSleepTime === BAN_IP_SLEEP_MS) {
             break // 结束本次任务，尝试下个任务
         }
-        
+
         if (mids.length === 0) {
             await sleep(7000)
         }
