@@ -30,7 +30,8 @@ const packageFetchInsertAsync = async (pid, mids) => {
         }
         // 循环两遍未结束，强行退出
         if (loopCount > midSize * 2) {
-            OT.log(`循环次数已到${loopCount}次，结束循环`);
+            sleepms = SLEEP_BAN_IP;
+            OT.log(`循环次数已到${loopCount}次，结束循环, 爬虫程序会在${sleepms / 60000}min后继续`);
             break;
         }
         let mid = mids.pop();
@@ -41,12 +42,6 @@ const packageFetchInsertAsync = async (pid, mids) => {
                 errorHandler('Empty response');
                 continue;
             }
-            if (rs.indexOf('DOCTYPE html') >= 0) {
-                sleepms = SLEEP_BAN_IP; // IP进小黑屋了
-                mids.push(mid);
-                OT.error(`${nowStr()} oops，你的IP进小黑屋了，爬虫程序会在10min后继续`);
-                continue;
-            }
             const data = JSON.parse(rs).data;
             data.card.mid = mid;
             data.card.archive_count = data.archive_count;
@@ -54,6 +49,12 @@ const packageFetchInsertAsync = async (pid, mids) => {
             cardList.push(data.card);
             delete processings[mid];
         } catch (err) {
+            if (err.message.indexOf('Forbidden') !== -1) {
+                sleepms = SLEEP_BAN_IP; // IP进小黑屋了
+                mids.push(mid);
+                OT.error(`${nowStr()} oops，你的IP进小黑屋了，爬虫程序会在10min后继续`);
+                continue;
+            }
             errorHandler(mid, err.message);
             continue;
         }

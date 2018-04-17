@@ -1,5 +1,5 @@
 
-const SLEEP_NORMAL = 150; // ms
+const SLEEP_NORMAL = 200; // ms
 
 const SLEEP_BAN_IP = 1000 * 60 * 10; // 10min
 
