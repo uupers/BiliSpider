@@ -21,10 +21,9 @@
     "electron-packager": "^11.0.1"
   },
   "dependencies": {
-    "bulma": "",
-    "moment": "",
+    "bulma": "*",
     "mongojs": "^2.5.0",
-    "superagent": ""
+    "spider-dist": "file:../node-spider-dist"
   },
   "build": {
     "appId": "com.uupers.app",

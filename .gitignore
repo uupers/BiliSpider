@@ -100,8 +100,9 @@ ENV/
 # mypy
 .mypy_cache/
 
-# electron
+# node and electron
 
-node_modules/
-app/node_modules/
+node_modules
 app/dist/
+package-lock.json
+yarn.lock

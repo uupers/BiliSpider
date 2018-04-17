@@ -1,0 +1,90 @@
+{
+  "code": 0,
+  "message": "0",
+  "ttl": 1,
+  "data": {
+    "card": {
+      "mid": "411421",
+      "name": "AryloYeung",
+      "approve": false,
+      "sex": "保密",
+      "rank": "10000",
+      "face": "http://i2.hdslb.com/bfs/face/4abe5a6531e1509a1648fa25bdf746593802c441.jpg",
+      "DisplayRank": "0",
+      "regtime": 0,
+      "spacesta": 0,
+      "birthday": "",
+      "place": "",
+      "description": "",
+      "article": 0,
+      "attentions": [
+        288239,
+        1393437,
+        92106599,
+        957390,
+        957244,
+        123938419,
+        6075139,
+        8756320,
+        39847390,
+        38002736,
+        14013810,
+        25453948,
+        535637,
+        761403,
+        6330633,
+        9982481,
+        1643718,
+        423895,
+        113711,
+        216025,
+        137173,
+        30160,
+        3347851,
+        777536,
+        3020100,
+        2123683,
+        133076
+      ],
+      "fans": 2,
+      "friend": 27,
+      "attention": 27,
+      "sign": "",
+      "level_info": {
+        "current_level": 5,
+        "current_min": 0,
+        "current_exp": 0,
+        "next_exp": 0
+      },
+      "pendant": {
+        "pid": 0,
+        "name": "",
+        "image": "",
+        "expire": 0
+      },
+      "nameplate": {
+        "nid": 0,
+        "name": "",
+        "image": "",
+        "image_small": "",
+        "level": "",
+        "condition": ""
+      },
+      "official_verify": {
+        "type": -1,
+        "desc": ""
+      },
+      "vip": {
+        "vipType": 1,
+        "dueRemark": "",
+        "accessStatus": 0,
+        "vipStatus": 0,
+        "vipStatusWarn": ""
+      }
+    },
+    "following": false,
+    "archive_count": 0,
+    "article_count": 0,
+    "follower": 2
+  }
+}
