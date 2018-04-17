@@ -15,7 +15,8 @@
     "moment": "^2.21.0",
     "mongodb": "^3.0.4",
     "redis": "^2.8.0",
-    "superagent": "^3.8.2"
+    "superagent": "^3.8.2",
+    "superagent-proxy": "^1.0.3"
   },
   "devDependencies": {
     "ava": "^0.25.0",

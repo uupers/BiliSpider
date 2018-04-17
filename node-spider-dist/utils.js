@@ -1,4 +1,5 @@
 const superagent = require('superagent');
+require('superagent-proxy')(superagent);
 const moment = require('moment');
 moment.locale('zh-cn');
 
@@ -14,13 +15,21 @@ const sleep = (time) => {
     return new Promise(resolve => setTimeout(resolve, time));
 };
 
-const httpGetAsync = (url, opts = { query: [ ] }) => {
+const httpGetAsync = (url, opts = { query: [ ], proxy: 'localhost' }) => {
     let req = superagent.get(url);
-    if (opts && Array.isArray(opts.query) && opts.query.length > 0) {
-        for (const q of opts.query) {
-            req = req.query(q);
+    if (opts) {
+        if (Array.isArray(opts.query) && opts.query.length > 0) {
+            for (const q of opts.query) {
+                req = req.query(q);
+            }
+        }
+        if (typeof opts.proxy === 'string') {
+            if (opts.proxy !== 'localhost') {
+                req = req.proxy(opts.proxy);
+            }
         }
     }
+
     return req.then((res) => res && res.text);
 };
 
@@ -53,8 +62,11 @@ const uploadPackageAsync = (pid, cardList) => {
 /**
  * 爬取用户信息
  */
-const fetchUserInfo = (mid) => {
-    return httpGetAsync(URL_USER_INFO, { query: [{ mid }] });
+const fetchUserInfo = (mid, opts = { proxy: 'localhost' }) => {
+    return httpGetAsync(
+        URL_USER_INFO,
+        Object.assign({ query: [{ mid }] }, opts)
+    );
 };
 
 const setMock = (mockModule) => {
