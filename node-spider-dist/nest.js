@@ -1,9 +1,17 @@
-const { Spider, SpiderStatus } = require('./spider');
+const { Spider, SpiderStatus, SpiderEvent } = require('./spider');
 const {
     getPackageAsync, uploadPackageAsync, packageArray, sleep, nowStr, OT
 } = require('./utils');
 const lodash = require('lodash');
 const EventEmitter = require('events').EventEmitter;
+
+const NestEvent = {
+    'START': Symbol('START'),
+    'END': Symbol('END'),
+    'SENDING': Symbol('SENDING'),
+    'SENDED': Symbol('SENDED'),
+    'CATCH': Symbol('CATCH')
+};
 
 class SpiderNest {
     constructor () {
@@ -15,13 +23,13 @@ class SpiderNest {
         this.event = new EventEmitter();
 
         this.appendSpiders([ '' ]); // 将本机加进去
-        this.event.on('Start', (pid, mids) => {
+        this.event.on(NestEvent.START, (pid, mids) => {
             OT.info(`[${nowStr()}] Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length - 1]}]`);
         });
-        this.event.on('Sending', (pid) => {
+        this.event.on(NestEvent.SENDING, (pid) => {
             OT.log(`[${nowStr()}] Sending package ${pid}`);
         });
-        this.event.on('Sended', (pid) => {
+        this.event.on(NestEvent.SENDED, (pid) => {
             OT.log(`[${nowStr()}] Sended package ${pid}`);
         });
     }
@@ -31,21 +39,21 @@ class SpiderNest {
         this.nest.push(...[...names].map((name) => {
             const spider = new Spider(name);
             const event = spider.event;
-            event.on('error', (s, _, mid, msg) => {
+            event.on(SpiderEvent.ERROR, (s, _, mid, msg) => {
                 OT.error(`[${nowStr()}][${s.url}] mid=${mid} ${msg}`);
             });
-            event.on('ban', (s) => {
+            event.on(SpiderEvent.BAN, (s) => {
                 OT.warn(`[${nowStr()}][${s.url}] oops，你的IP进小黑屋了，爬虫程序会在10min后继续`);
             });
-            event.addListener('timeout', (s) => {
+            event.addListener(SpiderEvent.TIMEOUT, (s) => {
                 if (s.timeout > 10) {
                     this.cleanDeadSpider(this.names.indexOf(s.url));
                 }
             });
-            event.on('Start', (s, mid) => {
+            event.on(SpiderEvent.START, (s, mid) => {
                 OT.log(`[${nowStr()}][${s.url}] mid=${mid} Statr`);
             });
-            event.on('End', (s, mid) => {
+            event.on(SpiderEvent.END, (s, mid) => {
                 OT.log(`[${nowStr()}][${s.url}] mid=${mid} Get`);
             });
             return spider;
@@ -58,14 +66,14 @@ class SpiderNest {
         const pid = JSON.parse(data).pid;
         if (pid === -1) return pid;
         const mids = packageArray(pid);
-        this.event.emit('Start', pid, mids);
+        this.event.emit(NestEvent.START, pid, mids);
         const lanuchArr = lodash.minBy([mids, this.nest], 'length');
         for (let i = 0; i < lanuchArr.length; i++) {
             const spider = this.nest[i];
-            spider.event.on('End', (s, mid) => {
-                this.event.emit('Catch', s, pid, mid);
+            spider.event.on(SpiderEvent.END, (s, mid) => {
+                this.event.emit(NestEvent.CATCH, s, pid, mid);
             });
-            spider.event.addListener('End', () => {
+            spider.event.addListener(SpiderEvent.END, () => {
                 if (mids.length !== 0 && this.isHasFree()) {
                     this.randomSpider().crawl(this.cardList, mids);
                     return;
@@ -77,7 +85,7 @@ class SpiderNest {
                     this.processed = true;
                 }
             });
-            spider.event.addListener('error', () => {
+            spider.event.addListener(SpiderEvent.ERROR, () => {
                 if (this.isHasFree()) {
                     this.randomSpider().crawl(this.cardList, mids);
                 }
@@ -94,9 +102,9 @@ class SpiderNest {
     }
 
     upload (pid) {
-        this.event.emit('Sending', pid);
+        this.event.emit(NestEvent.SENDING, pid);
         return uploadPackageAsync(pid, this.cardList).then(() => {
-            this.event.emit('Sended', pid);
+            this.event.emit(NestEvent.SENDED, pid);
         }).catch(async () => {
             return this.upload(pid);
         });

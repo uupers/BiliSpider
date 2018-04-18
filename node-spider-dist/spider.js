@@ -10,6 +10,14 @@ const SpiderStatus = {
     'BAN': 2
 };
 
+const SpiderEvent = {
+    'ERROR': Symbol('ERROR'),
+    'BAN': Symbol('BAN'),
+    'START': Symbol('START'),
+    'END': Symbol('END'),
+    'TIMEOUT': Symbol('TIMEOUT')
+};
+
 class Spider {
     constructor (url) {
         this.url = url;
@@ -20,17 +28,17 @@ class Spider {
         this.loopCount = 0;
         this.event = new EventEmitter();
 
-        this.event.on('error', (spider, mids, mid, msg) => {
+        this.event.on(SpiderEvent.ERROR, (spider, mids, mid, msg) => {
             mids.push(mid);
             spider.status = SpiderStatus.FREE;
         });
-        this.event.on('End', (spider) => {
+        this.event.on(SpiderEvent.END, (spider) => {
             spider.status = SpiderStatus.FREE;
             spider.timeout > 0 && spider.timeout--;
             spider.sleepms =
                 spider.url === '' ? SLEEP_NORMAL_LOCAL : SLEEP_NORMAL_PROXY;
         });
-        this.event.on('ban', (spider) => {
+        this.event.on(SpiderEvent.BAN, (spider) => {
             spider.sleepms = SLEEP_BAN_IP;
             spider.status = SpiderStatus.BAN;
         });
@@ -47,10 +55,10 @@ class Spider {
         this.status = SpiderStatus.BUSY;
         const mid = mids.pop();
         try {
-            this.event.emit('Start', this, mid);
+            this.event.emit(SpiderEvent.START, this, mid);
             const rs = await fetchUserInfo(mid, { proxy: this.url });
             if (!rs) {
-                this.event.emit('error', this, mids, mid, 'Empty response');
+                this.event.emit(SpiderEvent.ERROR, this, mids, mid, 'Empty response');
                 return;
             }
             const data = JSON.parse(rs).data;
@@ -58,21 +66,21 @@ class Spider {
             data.card.archive_count = data.archive_count;
             data.card.ctime = nowStr();
             cardList.push(data.card);
-            this.event.emit('End', this, mid);
+            this.event.emit(SpiderEvent.END, this, mid);
         } catch (err) {
             if (err.message && err.message.indexOf('Forbidden') !== -1) {
                 // IP进小黑屋了
                 mids.push(mid);
-                this.event.emit('ban', this, mids, mid, 'Ban IP');
+                this.event.emit(SpiderEvent.BAN, this, mids, mid, 'Ban IP');
                 return;
             }
-            this.event.emit('error', this, mids, mid, err.message);
+            this.event.emit(SpiderEvent.ERROR, this, mids, mid, err.message);
             if (err && err.timeout) {
                 this.timeout++;
-                this.event.emit('timout', this, mid);
+                this.event.emit(SpiderEvent.TIMEOUT, this, mid);
             }
         }
     }
 }
 
-module.exports = { Spider, SpiderStatus };
+module.exports = { Spider, SpiderStatus, SpiderEvent };
