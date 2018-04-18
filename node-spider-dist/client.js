@@ -1,4 +1,4 @@
-const { loop } = require('./process');
+const { client } = require('.');
 const minimist = require('minimist');
 
 const list = minimist(process.argv.slice(2), {
@@ -9,5 +9,5 @@ const list = minimist(process.argv.slice(2), {
 
 // start code
 (async () => {
-    await loop(typeof list.proxy === 'string' ? [ list.proxy ] : list.proxy);
+    await client.loop(typeof list.proxy === 'string' ? [ list.proxy ] : list.proxy);
 })();

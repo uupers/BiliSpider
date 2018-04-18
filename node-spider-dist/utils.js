@@ -86,6 +86,12 @@ const OT = {
 };
 
 const setOutput = (obj) => {
+    if (!obj) {
+        for (const method of Object.keys(OT)) {
+            OT[method] = () => { };
+        }
+        return;
+    }
     for (const method of Object.keys(OT)) {
         const fn = obj[method];
         if (fn && typeof fn === 'function') {
