@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js client.js spider.js utils.js constants.js test/**/*.js",
+    "lint": "eslint index.js client.js process.js spider.js nest.js utils.js constants.js test/**/*.js",
     "test": "ava"
   },
   "author": "Nintha",
@@ -12,6 +12,8 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "lodash": "^4.17.5",
+    "minimist": "^1.2.0",
     "moment": "^2.21.0",
     "mongodb": "^3.0.4",
     "redis": "^2.8.0",

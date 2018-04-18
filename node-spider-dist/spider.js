@@ -1,105 +1,74 @@
-/**
- * version:2018-03-03
- * 1. 提升稳定性：爬取用户信息时的异常进行处理
- */
-const {
-    sleep, getPackageAsync, fetchUserInfo, nowStr, packageArray,
-    uploadPackageAsync, OT
-} = require('./utils');
+const { SLEEP_NORMAL, SLEEP_BAN_IP } = require('./constants');
+const { fetchUserInfo, nowStr, sleep } = require('./utils');
+const EventEmitter = require('events').EventEmitter;
 
-const { SLEEP_BAN_IP, SLEEP_NORMAL } = require('./constants');
+const SpiderStatus = {
+    'FREE': 0,
+    'BUSY': 1,
+    'BAN': 2
+};
 
-//  mids：待处理mid列表，
-const packageFetchInsertAsync = async (pid, mids) => {
-    let sleepms = SLEEP_NORMAL;
+class Spider {
+    constructor (url) {
+        this.url = url;
+        this.status = SpiderStatus.FREE;
+        this.sleepms = SLEEP_NORMAL;
+        this.timeout = 0;
+        this.loopCount = 0;
+        this.event = new EventEmitter();
 
-    const midSize = mids.length;
-    let cardList = [ ];
-    let loopCount = 0;
-    const processings = { }; // 进行中的任务
+        this.event.on('error', (spider, mids, mid, msg) => {
+            mids.push(mid);
+            spider.status = SpiderStatus.FREE;
+        });
+        this.event.on('End', (spider) => {
+            spider.status = SpiderStatus.FREE;
+            spider.timeout > 0 && spider.timeout--;
+            spider.sleepms = SLEEP_NORMAL;
+        });
+        this.event.on('ban', (spider) => {
+            spider.sleepms = SLEEP_BAN_IP;
+            spider.status = SpiderStatus.BAN;
+        });
+    }
 
-    const errorHandler = (mid, msg) => {
-        mids.push(mid);
-        delete processings[mid];
-        OT.error(`${nowStr()} mid=${mid} ${msg}`);
-    };
-    while (mids.length > 0) {
+    async crawl (cardList, mids) {
         // 栗子流节流器
-        if (loopCount++ > 0) {
-            await sleep(sleepms);
+        if (this.loopCount++ > 0) {
+            await sleep(this.sleepms);
         }
-        // 循环两遍未结束，强行退出
-        if (loopCount > midSize * 2) {
-            sleepms = SLEEP_BAN_IP;
-            OT.log(`循环次数已到${loopCount}次，结束循环, 爬虫程序会在${sleepms / 60000}min后继续`);
-            break;
+        if (!this.status === SpiderStatus.FREE || mids.length === 0) {
+            return;
         }
-        let mid = mids.pop();
-        processings[mid] = true;
+        this.status = SpiderStatus.BUSY;
+        const mid = mids.pop();
         try {
-            const rs = await fetchUserInfo(mid);
+            this.event.emit('Start', this, mid);
+            const rs = await fetchUserInfo(mid, { proxy: this.url });
             if (!rs) {
-                errorHandler('Empty response');
-                continue;
+                this.event.emit('error', this, mids, mid, 'Empty response');
+                return;
             }
             const data = JSON.parse(rs).data;
             data.card.mid = mid;
             data.card.archive_count = data.archive_count;
             data.card.ctime = nowStr();
             cardList.push(data.card);
-            delete processings[mid];
+            this.event.emit('End', this, mid);
         } catch (err) {
-            if (err.message.indexOf('Forbidden') !== -1) {
-                sleepms = SLEEP_BAN_IP; // IP进小黑屋了
+            if (err.message && err.message.indexOf('Forbidden') !== -1) {
+                // IP进小黑屋了
                 mids.push(mid);
-                OT.error(`${nowStr()} oops，你的IP进小黑屋了，爬虫程序会在10min后继续`);
-                continue;
+                this.event.emit('ban', this, mids, mid, 'Ban IP');
+                return;
             }
-            errorHandler(mid, err.message);
-            continue;
-        }
-
-        if (sleepms === SLEEP_BAN_IP) {
-            break; // 结束本次任务，尝试下个任务
-        }
-
-        if (mids.length === 0) {
-            await sleep(7000);
-        }
-    }
-    if (cardList.length === midSize) {
-        await uploadPackageAsync(pid, cardList);
-        OT.log(`${nowStr()} Send package ${pid}`);
-    } else {
-        OT.error(`${nowStr()} Failed to fetch info, ok/all=${cardList.length}/${midSize}, remains=${mids}, processings=${Object.keys(processings)}`);
-    }
-};
-
-const process = async () => {
-    const data = await getPackageAsync();
-    const pid = JSON.parse(data).pid;
-    if (pid === -1) return pid;
-
-    const mids = packageArray(pid);
-    OT.log(`${nowStr()} Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length - 1]}]`);
-    await packageFetchInsertAsync(pid, mids);
-};
-
-const loop = async () => {
-    OT.log(`${nowStr()} Start to fetch member info.`);
-    for (;;) {
-        try {
-            if (await process() === -1) {
-                break;
+            this.event.emit('error', this, mids, mid, err.message);
+            if (err && err.timeout) {
+                this.timeout++;
+                this.event.emit('timout', this, mid);
             }
-        } catch (err) {
-            OT.error(`很有可能是网络超时了, 10秒后重试 ${err.message}`);
-            await sleep(10000);
         }
     }
-    OT.log(`${nowStr()} End fetch.`);
-};
+}
 
-module.exports = {
-    process, loop
-};
+module.exports = { Spider, SpiderStatus };

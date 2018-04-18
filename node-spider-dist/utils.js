@@ -15,7 +15,12 @@ const sleep = (time) => {
     return new Promise(resolve => setTimeout(resolve, time));
 };
 
-const httpGetAsync = (url, opts = { query: [ ], proxy: 'localhost' }) => {
+const DEF_HTTP_GET_OPTIONS = {
+    query: [ ],
+    proxy: ''
+};
+
+const httpGetAsync = (url, opts = DEF_HTTP_GET_OPTIONS) => {
     let req = superagent.get(url);
     if (opts) {
         if (Array.isArray(opts.query) && opts.query.length > 0) {
@@ -24,13 +29,13 @@ const httpGetAsync = (url, opts = { query: [ ], proxy: 'localhost' }) => {
             }
         }
         if (typeof opts.proxy === 'string') {
-            if (opts.proxy !== 'localhost') {
+            if (opts.proxy !== '') {
                 req = req.proxy(opts.proxy);
             }
         }
     }
 
-    return req.then((res) => res && res.text);
+    return req.timeout(5000).then((res) => res && res.text);
 };
 
 const nowStr = () => moment().format('YYYY-MM-DD HH:mm:ss');
@@ -62,7 +67,7 @@ const uploadPackageAsync = (pid, cardList) => {
 /**
  * 爬取用户信息
  */
-const fetchUserInfo = (mid, opts = { proxy: 'localhost' }) => {
+const fetchUserInfo = (mid, opts = { proxy: '' }) => {
     return httpGetAsync(
         URL_USER_INFO,
         Object.assign({ query: [{ mid }] }, opts)

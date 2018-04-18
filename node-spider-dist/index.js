@@ -1,9 +1,9 @@
-const spider = require('./spider');
+const process = require('./process');
 const utils = require('./utils');
 
 const client = {
-    process: spider.process,
-    loop: spider.loop,
+    process: process.process,
+    loop: process.loop,
     setOutput: utils.setOutput
 };
 
