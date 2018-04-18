@@ -4,9 +4,38 @@ const {
 
 const { SpiderNest } = require('./nest');
 
+const fns = [ ];
+
+const on = (eventName, fn) => {
+    let obj = {
+        name: eventName,
+        fns: [ ]
+    };
+    let point = -1;
+    for (let i = 0; i < fns.length; i++) {
+        const eventObj = fns[i];
+        if (eventObj.name === eventName) {
+            obj = eventObj;
+            point = i;
+            break;
+        }
+    }
+    obj.fns.push(fn);
+    if (point === -1) {
+        fns.push(obj);
+    } else {
+        fns[point] = obj;
+    }
+};
+
 const process = (list = [ ]) => {
     const nest = new SpiderNest();
     nest.appendSpiders(list);
+    for (const eventObj of fns) {
+        for (const fn of eventObj.fns) {
+            nest.event.on(eventObj.name, fn);
+        }
+    }
     return nest.march();
 };
 
@@ -26,5 +55,5 @@ const loop = async (list = [ ]) => {
 };
 
 module.exports = {
-    process, loop
+    process, loop, on
 };

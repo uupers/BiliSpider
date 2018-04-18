@@ -83,6 +83,7 @@ class SpiderNest {
                 }
                 if (mids.length === 0 && !this.isHasBusy()) {
                     this.processed = true;
+                    this.event.emit(NestEvent.END, pid, this.cardList);
                 }
             });
             spider.event.addListener(SpiderEvent.ERROR, () => {
@@ -142,4 +143,4 @@ class SpiderNest {
     }
 }
 
-module.exports = { SpiderNest };
+module.exports = { SpiderNest, NestEvent };
