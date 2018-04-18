@@ -1,4 +1,6 @@
-const { SLEEP_NORMAL, SLEEP_BAN_IP } = require('./constants');
+const {
+    SLEEP_NORMAL_LOCAL, SLEEP_NORMAL_PROXY, SLEEP_BAN_IP
+} = require('./constants');
 const { fetchUserInfo, nowStr, sleep } = require('./utils');
 const EventEmitter = require('events').EventEmitter;
 
@@ -12,7 +14,8 @@ class Spider {
     constructor (url) {
         this.url = url;
         this.status = SpiderStatus.FREE;
-        this.sleepms = SLEEP_NORMAL;
+        this.sleepms =
+            this.url === '' ? SLEEP_NORMAL_LOCAL : SLEEP_NORMAL_PROXY;
         this.timeout = 0;
         this.loopCount = 0;
         this.event = new EventEmitter();
@@ -24,7 +27,8 @@ class Spider {
         this.event.on('End', (spider) => {
             spider.status = SpiderStatus.FREE;
             spider.timeout > 0 && spider.timeout--;
-            spider.sleepms = SLEEP_NORMAL;
+            spider.sleepms =
+                spider.url === '' ? SLEEP_NORMAL_LOCAL : SLEEP_NORMAL_PROXY;
         });
         this.event.on('ban', (spider) => {
             spider.sleepms = SLEEP_BAN_IP;
