@@ -4,6 +4,7 @@ const ProgressBar = require('progress');
 const ora = require('ora');
 
 const xdaili = require('./client/proxy/xdaili');
+const xicidaili = require('./client/proxy/xicidaili');
 
 const args = minimist(process.argv.slice(2), {
     alias: { 'p': 'proxy', 'q': 'quiet', 'np': 'netproxy' },
@@ -51,6 +52,7 @@ const barMap = { };
     }
     if (args.np) {
         xdaili.process();
+        xicidaili.process();
     }
     await client.loop(proxyList);
 })();

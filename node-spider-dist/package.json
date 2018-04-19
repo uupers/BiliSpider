@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "cfonts": "^1.2.0",
+    "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
     "lodash": "^4.17.5",
     "minimist": "^1.2.0",
@@ -20,6 +21,8 @@
     "ora": "^2.0.0",
     "progress": "^2.0.0",
     "redis": "^2.8.0",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
     "superagent": "^3.8.2",
     "superagent-proxy": "^1.0.3"
   },
