@@ -45,14 +45,17 @@ class Spider {
     }
 
     async crawl (cardList, mids) {
+        if (this.status === SpiderEvent.BUSY) {
+            return;
+        }
+        this.status = SpiderStatus.BUSY;
         // 栗子流节流器
         if (this.loopCount++ > 0) {
             await sleep(this.sleepms);
         }
-        if (!this.status === SpiderStatus.FREE || mids.length === 0) {
+        if (mids.length === 0) {
             return;
         }
-        this.status = SpiderStatus.BUSY;
         const mid = mids.pop();
         try {
             this.event.emit(SpiderEvent.START, this, mid);
@@ -76,7 +79,8 @@ class Spider {
             }
             this.event.emit(SpiderEvent.ERROR, this, mids, mid, err.message);
             if (err && err.timeout) {
-                this.timeout++;
+                // 本体无超时
+                (this.url !== '') && this.timeout++;
                 this.event.emit(SpiderEvent.TIMEOUT, this, mid);
             }
         }

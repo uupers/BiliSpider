@@ -28,24 +28,28 @@ const on = (eventName, fn) => {
     }
 };
 
+let curNest;
+
 const process = (list = [ ]) => {
-    const nest = new SpiderNest();
-    nest.appendSpiders(list);
+    curNest = new SpiderNest();
+    curNest.appendSpiders(list);
     for (const eventObj of fns) {
         for (const fn of eventObj.fns) {
-            nest.event.on(eventObj.name, fn);
+            curNest.event.on(eventObj.name, fn);
         }
     }
-    return nest.march();
+    return curNest.march();
 };
 
 const loop = async (list = [ ]) => {
     OT.info(`[${nowStr()}] Start to fetch member info.`);
+    let _list;
     for (;;) {
         try {
-            if (await process(list) === -1) {
+            if (await process(_list || list) === -1) {
                 break;
             }
+            _list = curNest.names;
         } catch (err) {
             OT.error(`很有可能是网络超时了, 10秒后重试 ${err.message}`);
             await sleep(10000);
@@ -55,5 +59,5 @@ const loop = async (list = [ ]) => {
 };
 
 module.exports = {
-    process, loop, on
+    process, loop, on, current: curNest
 };

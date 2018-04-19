@@ -13,16 +13,21 @@ const NestEvent = {
     'CATCH': Symbol('CATCH')
 };
 
+const TIMEOUT = 1000 * 60 * 20; // 20 min
+
 class SpiderNest {
-    constructor () {
+    constructor (list = [ '' ]) {
         this.names = [ ];
         this.nest = [ ];
         this.cardList = [ ];
         this.pid = 0;
         this.processed = false;
         this.event = new EventEmitter();
+        this.startedAt = 0;
 
-        this.appendSpiders([ '' ]); // 将本机加进去
+        if (list) {
+            this.appendSpiders(list);
+        }
         this.event.on(NestEvent.START, (pid, mids) => {
             OT.info(`[${nowStr()}] Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length - 1]}]`);
         });
@@ -50,18 +55,13 @@ class SpiderNest {
                     this.cleanDeadSpider(this.names.indexOf(s.url));
                 }
             });
-            event.on(SpiderEvent.START, (s, mid) => {
-                OT.log(`[${nowStr()}][${s.url}] mid=${mid} Statr`);
-            });
-            event.on(SpiderEvent.END, (s, mid) => {
-                OT.log(`[${nowStr()}][${s.url}] mid=${mid} Get`);
-            });
             return spider;
         }));
         return true;
     }
 
     async march () {
+        this.startedAt = Date.now();
         const data = await getPackageAsync();
         const pid = JSON.parse(data).pid;
         if (pid === -1) return pid;
@@ -70,34 +70,39 @@ class SpiderNest {
         const lanuchArr = lodash.minBy([mids, this.nest], 'length');
         for (let i = 0; i < lanuchArr.length; i++) {
             const spider = this.nest[i];
+            const that = this;
             spider.event.on(SpiderEvent.END, (s, mid) => {
-                this.event.emit(NestEvent.CATCH, s, pid, mid);
+                that.event.emit(NestEvent.CATCH, s, pid, mid);
             });
             spider.event.addListener(SpiderEvent.END, () => {
-                if (mids.length !== 0 && this.isHasFree()) {
-                    this.randomSpider().crawl(this.cardList, mids);
+                if (that.processed) {
                     return;
                 }
-                if (this.processed) {
-                    return;
-                }
-                if (mids.length === 0 && !this.isHasBusy()) {
-                    this.processed = true;
-                    this.event.emit(NestEvent.END, pid, this.cardList);
+                if (mids.length === 0 && !that.isHasBusy()) {
+                    that.processed = true;
+                    that.event.emit(NestEvent.END, pid, that.cardList);
                 }
             });
-            spider.event.addListener(SpiderEvent.ERROR, () => {
-                if (this.isHasFree()) {
-                    this.randomSpider().crawl(this.cardList, mids);
-                }
+            spider.event.on(SpiderEvent.BAN, (s) => {
+                s.crawl(that.cardList, mids);
             });
-            spider.crawl(this.cardList, mids);
         }
         for (;;) {
-            await sleep(1000);
+            await sleep(100);
+            if (this.startedAt + TIMEOUT >= Date.now()) {
+                break;
+            }
             if (this.processed) {
                 await this.upload(pid);
                 break;
+            } else if (this.isHasFree()) {
+                let spiders = this.getFree();
+                spiders = lodash.sampleSize(spiders, spiders.length);
+                const lanuchArr = lodash.minBy([mids, spiders], 'length');
+                for (let i = 0; i < lanuchArr.length; i++) {
+                    const spider = spiders[i];
+                    spider.crawl(this.cardList, mids);
+                }
             }
         }
     }
@@ -127,6 +132,12 @@ class SpiderNest {
             }
         }
         return false;
+    }
+
+    getFree () {
+        return this.nest.filter((s) => {
+            return s.status === SpiderStatus.FREE;
+        });
     }
 
     randomSpider () {
