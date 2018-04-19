@@ -25,9 +25,7 @@ class SpiderNest {
         this.event = new EventEmitter();
         this.startedAt = 0;
 
-        if (list) {
-            this.appendSpiders(list);
-        }
+        this.appendSpiders(list);
         this.event.on(NestEvent.START, (pid, mids) => {
             OT.info(`[${nowStr()}] Get package ${pid}, fetch mids [${mids[0]}, ${mids[mids.length - 1]}]`);
         });
@@ -36,6 +34,9 @@ class SpiderNest {
         });
         this.event.on(NestEvent.SENDED, (pid) => {
             OT.log(`[${nowStr()}] Sended package ${pid}`);
+        });
+        this.event.on(NestEvent.END, () => {
+            this.processed = true;
         });
     }
 
@@ -46,14 +47,12 @@ class SpiderNest {
             const event = spider.event;
             event.on(SpiderEvent.ERROR, (s, _, mid, msg) => {
                 OT.error(`[${nowStr()}][${s.url}] mid=${mid} ${msg}`);
+                if (s.errors >= 5) {
+                    this.cleanDeadSpider(this.names.indexOf(s.url));
+                }
             });
             event.on(SpiderEvent.BAN, (s) => {
                 OT.warn(`[${nowStr()}][${s.url}] oops，你的IP进小黑屋了，爬虫程序会在10min后继续`);
-            });
-            event.addListener(SpiderEvent.TIMEOUT, (s) => {
-                if (s.timeout > 10) {
-                    this.cleanDeadSpider(this.names.indexOf(s.url));
-                }
             });
             return spider;
         }));
@@ -72,14 +71,13 @@ class SpiderNest {
             const spider = this.nest[i];
             const that = this;
             spider.event.on(SpiderEvent.END, (s, mid) => {
-                that.event.emit(NestEvent.CATCH, s, pid, mid);
+                that.event.emit(NestEvent.CATCH, s, pid, mid, that.cardList);
             });
             spider.event.addListener(SpiderEvent.END, () => {
                 if (that.processed) {
                     return;
                 }
                 if (mids.length === 0 && !that.isHasBusy()) {
-                    that.processed = true;
                     that.event.emit(NestEvent.END, pid, that.cardList);
                 }
             });
@@ -89,10 +87,11 @@ class SpiderNest {
         }
         for (;;) {
             await sleep(100);
-            if (this.startedAt + TIMEOUT >= Date.now()) {
+            if (this.startedAt + TIMEOUT <= Date.now()) {
                 break;
             }
-            if (this.processed) {
+            if (this.cardList.length === 1000 || this.processed) {
+                this.event.emit(NestEvent.END, pid, this.cardList);
                 await this.upload(pid);
                 break;
             } else if (this.isHasFree()) {

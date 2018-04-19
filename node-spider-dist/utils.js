@@ -21,7 +21,7 @@ const DEF_HTTP_GET_OPTIONS = {
 };
 
 const httpGetAsync = (url, opts = DEF_HTTP_GET_OPTIONS) => {
-    let req = superagent.get(url);
+    let req = superagent.get(url).timeout(5000);
     if (opts) {
         if (Array.isArray(opts.query) && opts.query.length > 0) {
             for (const q of opts.query) {
@@ -35,7 +35,7 @@ const httpGetAsync = (url, opts = DEF_HTTP_GET_OPTIONS) => {
         }
     }
 
-    return req.timeout(5000).then((res) => res && res.text);
+    return req.then((res) => res && res.text);
 };
 
 const nowStr = () => moment().format('YYYY-MM-DD HH:mm:ss');

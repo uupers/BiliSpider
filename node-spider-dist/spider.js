@@ -14,8 +14,7 @@ const SpiderEvent = {
     'ERROR': Symbol('ERROR'),
     'BAN': Symbol('BAN'),
     'START': Symbol('START'),
-    'END': Symbol('END'),
-    'TIMEOUT': Symbol('TIMEOUT')
+    'END': Symbol('END')
 };
 
 class Spider {
@@ -24,7 +23,7 @@ class Spider {
         this.status = SpiderStatus.FREE;
         this.sleepms =
             this.url === '' ? SLEEP_NORMAL_LOCAL : SLEEP_NORMAL_PROXY;
-        this.timeout = 0;
+        this.errors = 0;
         this.loopCount = 0;
         this.event = new EventEmitter();
 
@@ -34,7 +33,7 @@ class Spider {
         });
         this.event.on(SpiderEvent.END, (spider) => {
             spider.status = SpiderStatus.FREE;
-            spider.timeout > 0 && spider.timeout--;
+            spider.errors > 0 && spider.errors--;
             spider.sleepms =
                 spider.url === '' ? SLEEP_NORMAL_LOCAL : SLEEP_NORMAL_PROXY;
         });
@@ -54,6 +53,7 @@ class Spider {
             await sleep(this.sleepms);
         }
         if (mids.length === 0) {
+            this.status = SpiderStatus.FREE;
             return;
         }
         const mid = mids.pop();
@@ -77,12 +77,8 @@ class Spider {
                 this.event.emit(SpiderEvent.BAN, this, mids, mid, 'Ban IP');
                 return;
             }
+            (this.url !== '') && this.errors++;
             this.event.emit(SpiderEvent.ERROR, this, mids, mid, err.message);
-            if (err && err.timeout) {
-                // 本体无超时
-                (this.url !== '') && this.timeout++;
-                this.event.emit(SpiderEvent.TIMEOUT, this, mid);
-            }
         }
     }
 }

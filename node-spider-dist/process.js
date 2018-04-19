@@ -30,9 +30,8 @@ const on = (eventName, fn) => {
 
 let curNest;
 
-const process = (list = [ ]) => {
-    curNest = new SpiderNest();
-    curNest.appendSpiders(list);
+const process = (list) => {
+    curNest = new SpiderNest(list);
     for (const eventObj of fns) {
         for (const fn of eventObj.fns) {
             curNest.event.on(eventObj.name, fn);
@@ -43,13 +42,13 @@ const process = (list = [ ]) => {
 
 const loop = async (list = [ ]) => {
     OT.info(`[${nowStr()}] Start to fetch member info.`);
-    let _list;
     for (;;) {
         try {
-            if (await process(_list || list) === -1) {
+            const proxyList =
+                getCurrent() ? getCurrent().names : [''].concat(list);
+            if (await process(proxyList) === -1) {
                 break;
             }
-            _list = curNest.names;
         } catch (err) {
             OT.error(`很有可能是网络超时了, 10秒后重试 ${err.message}`);
             await sleep(10000);
@@ -58,6 +57,8 @@ const loop = async (list = [ ]) => {
     OT.info(`[${nowStr()}] End fetch.`);
 };
 
+const getCurrent = () => curNest;
+
 module.exports = {
-    process, loop, on, current: curNest
+    process, loop, on, getCurrent
 };

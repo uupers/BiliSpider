@@ -7,6 +7,7 @@ const client = {
     loop: process.loop,
     on: process.on,
     event: NestEvent,
+    getCurrent: process.getCurrent,
     setOutput: utils.setOutput
 };
 

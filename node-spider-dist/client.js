@@ -3,10 +3,12 @@ const minimist = require('minimist');
 const ProgressBar = require('progress');
 const ora = require('ora');
 
+const xdaili = require('./client/proxy/xdaili');
+
 const args = minimist(process.argv.slice(2), {
-    alias: { 'p': 'proxy', 'q': 'quiet' },
+    alias: { 'p': 'proxy', 'q': 'quiet', 'np': 'netproxy' },
     string: 'proxy',
-    boolean: ['quiet', 'old'],
+    boolean: ['quiet', 'old', 'netproxy'],
     default: { proxy: [ ], quiet: false, old: false }
 });
 
@@ -28,10 +30,16 @@ const barMap = { };
                 width: 40,
                 total: mids.length
             });
+            barMap[pid].tick(0, { 'pkg': pid });
         });
-        client.on(client.event.CATCH, (_, pid) => {
+        client.on(client.event.CATCH, (_, pid, mid, cardList) => {
             const bar = barMap[pid];
-            bar.tick({ 'pkg': pid });
+            bar.tick(cardList.length - bar.curr, { 'pkg': pid });
+        });
+        client.on(client.event.END, (_, pid, cardList) => {
+            const bar = barMap[pid];
+            bar.tick(cardList.length, { 'pkg': pid });
+            delete barMap[pid];
         });
         client.on(client.event.SENDING, (pid) => {
             barMap[pid] = ora(`正在上传 Package ${pid}`).start();
@@ -40,6 +48,9 @@ const barMap = { };
             barMap[pid].succeed(`成功上传 Package ${pid}`);
             delete barMap[pid];
         });
+    }
+    if (args.np) {
+        xdaili.process();
     }
     await client.loop(proxyList);
 })();
