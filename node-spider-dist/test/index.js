@@ -2,8 +2,8 @@ import test from 'ava';
 
 const {
     URL_GET_PACKAGE, URL_USER_INFO, URL_UPLOAD_PACKAGE, SLEEP_NORMAL_LOCAL
-} = require('../constants');
-const { setMock } = require('../utils');
+} = require('../client/constants');
+const { setMock } = require('../client/utils');
 const mock = setMock(require('superagent-mocker'));
 const { client } = require('..');
 const lodash = require('lodash');

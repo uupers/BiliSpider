@@ -1,6 +1,6 @@
-const process = require('./process');
-const utils = require('./utils');
-const { NestEvent } = require('./nest');
+const process = require('./client/process');
+const utils = require('./client/utils');
+const { NestEvent } = require('./client/nest');
 
 const client = {
     process: process.process,

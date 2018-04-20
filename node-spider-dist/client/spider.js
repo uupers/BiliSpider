@@ -1,8 +1,7 @@
 const {
-    SLEEP_NORMAL_LOCAL, SLEEP_NORMAL_PROXY, SLEEP_BAN_IP
+    SLEEP_NORMAL_LOCAL, SLEEP_NORMAL_PROXY, SLEEP_BAN_IP, ID_RANGE_NUM
 } = require('./constants');
 const { fetchUserInfo, nowStr } = require('./utils');
-const { ID_RANGE_NUM } = require('./constants');
 const EventEmitter = require('events').EventEmitter;
 
 const SpiderStatus = {
