@@ -2,6 +2,7 @@ const { Spider, SpiderStatus, SpiderEvent } = require('./spider');
 const {
     getPackageAsync, uploadPackageAsync, packageArray, sleep, nowStr, OT
 } = require('./utils');
+const { ID_RANGE_NUM } = require('./constants');
 const lodash = require('lodash');
 const EventEmitter = require('events').EventEmitter;
 
@@ -10,18 +11,19 @@ const NestEvent = {
     'END': Symbol('END'),
     'SENDING': Symbol('SENDING'),
     'SENDED': Symbol('SENDED'),
+    'VING': Symbol('VING'),
+    'VSUCCESS': Symbol('VSUCCESS'),
+    'VFAIL': Symbol('VFAIL'),
+    'TIMEOUT': Symbol('TIMEOUT'),
     'CATCH': Symbol('CATCH')
 };
 
-const TIMEOUT = 1000 * 60 * 20; // 20 min
+const TIMEOUT = 1000 * 60 * 60; // 1h
 
 class SpiderNest {
     constructor (list = [ '' ]) {
         this.names = [ ];
         this.nest = [ ];
-        this.cardList = [ ];
-        this.pid = 0;
-        this.processed = false;
         this.event = new EventEmitter();
         this.startedAt = 0;
 
@@ -35,14 +37,14 @@ class SpiderNest {
         this.event.on(NestEvent.SENDED, (pid) => {
             OT.log(`[${nowStr()}] Sended package ${pid}`);
         });
-        this.event.on(NestEvent.END, () => {
-            this.processed = true;
-        });
     }
 
     appendSpiders (names) {
-        this.names.push(...names);
-        this.nest.push(...[...names].map((name) => {
+        const list = [...new Set(names)].filter((v) => {
+            return this.names.indexOf(v) === -1;
+        });
+        this.names.push(...list);
+        this.nest.push(...list.map((name) => {
             const spider = new Spider(name);
             const event = spider.event;
             event.on(SpiderEvent.ERROR, (s, _, mid, msg) => {
@@ -54,6 +56,12 @@ class SpiderNest {
             event.on(SpiderEvent.BAN, (s) => {
                 OT.warn(`[${nowStr()}][${s.url}] oops，你的IP进小黑屋了，爬虫程序会在10min后继续`);
             });
+            event.on(SpiderEvent.START, (s, mid) => {
+                OT.log(`[${nowStr()}][${s.url}] mid=${mid} Start`);
+            });
+            event.on(SpiderEvent.END, (s, mid) => {
+                OT.log(`[${nowStr()}][${s.url}] mid=${mid} Get`);
+            });
             return spider;
         }));
         return true;
@@ -64,51 +72,68 @@ class SpiderNest {
         const data = await getPackageAsync();
         const pid = JSON.parse(data).pid;
         if (pid === -1) return pid;
-        const mids = packageArray(pid);
+        this.store = new NestStore(pid);
+        this.store.on(StoreEvent.PUSH, (store, mid) => {
+            const cardList = store.getList();
+            const pid = store.getPid();
+            this.event.emit(NestEvent.CATCH, pid, mid, cardList);
+        });
+        const mids = this.store.getMids();
         this.event.emit(NestEvent.START, pid, mids);
-        const lanuchArr = lodash.minBy([mids, this.nest], 'length');
-        for (let i = 0; i < lanuchArr.length; i++) {
-            const spider = this.nest[i];
-            const that = this;
-            spider.event.on(SpiderEvent.END, (s, mid) => {
-                that.event.emit(NestEvent.CATCH, s, pid, mid, that.cardList);
-            });
-            spider.event.addListener(SpiderEvent.END, () => {
-                if (that.processed) {
-                    return;
-                }
-                if (mids.length === 0 && !that.isHasBusy()) {
-                    that.event.emit(NestEvent.END, pid, that.cardList);
-                }
-            });
-            spider.event.on(SpiderEvent.BAN, (s) => {
-                s.crawl(that.cardList, mids);
-            });
-        }
+        const that = this;
         for (;;) {
-            await sleep(100);
-            if (this.startedAt + TIMEOUT <= Date.now()) {
+            await sleep(50);
+            if (that.startedAt + TIMEOUT <= Date.now()) {
+                that.event.emit(NestEvent.TIMEOUT, pid);
                 break;
             }
-            if (this.cardList.length === 1000 || this.processed) {
-                this.event.emit(NestEvent.END, pid, this.cardList);
-                await this.upload(pid);
+            if (that.store.getCount() === ID_RANGE_NUM) {
+                that.event.emit(NestEvent.END, pid, that.store.getList());
+                await that.upload(pid);
                 break;
-            } else if (this.isHasFree()) {
-                let spiders = this.getFree();
+            } else if (that.isHasFree()) {
+                let spiders = that.getFreeSpiders();
                 spiders = lodash.sampleSize(spiders, spiders.length);
-                const lanuchArr = lodash.minBy([mids, spiders], 'length');
+                const cards = that.store.getLoseCards();
+                const lanuchArr =
+                    lodash.minBy([mids, spiders, cards], 'length');
                 for (let i = 0; i < lanuchArr.length; i++) {
                     const spider = spiders[i];
-                    spider.crawl(this.cardList, mids);
+                    spider.crawl(that.store, cards[i]);
                 }
             }
         }
     }
 
-    upload (pid) {
+    validtion () {
+        const pid = this.store.getPid();
+        this.event.emit(NestEvent.VING, pid);
+        const srcList = this.store.getMids();
+        const tarList = this.store.getList()
+            .sort((a, b) => {
+                return a.mid - b.mid;
+            })
+            .reduce((arr, item) => {
+                arr.push(+item.mid);
+                return arr;
+            }, [ ]);
+        for (let i = 0; i < srcList.length; i++) {
+            if (srcList[i] !== tarList[i]) {
+                this.event.emit(NestEvent.VFAIL, pid);
+                return false;
+            }
+        }
+        this.event.emit(NestEvent.VSUCCESS, pid);
+        return true;
+    }
+
+    async upload () {
+        const pid = this.store.getPid();
+        if (!this.validtion(pid)) {
+            return;
+        }
         this.event.emit(NestEvent.SENDING, pid);
-        return uploadPackageAsync(pid, this.cardList).then(() => {
+        return uploadPackageAsync(pid, this.store.getList()).then(() => {
             this.event.emit(NestEvent.SENDED, pid);
         }).catch(async () => {
             return this.upload(pid);
@@ -133,7 +158,7 @@ class SpiderNest {
         return false;
     }
 
-    getFree () {
+    getFreeSpiders () {
         return this.nest.filter((s) => {
             return s.status === SpiderStatus.FREE;
         });
@@ -150,6 +175,59 @@ class SpiderNest {
     cleanDeadSpider (point) {
         this.names.splice(point, 1);
         this.nest.splice(point, 1);
+    }
+}
+
+const StoreStatus = {
+    'NONE': Symbol('NONE'),
+    'EXIST': Symbol('EXIST'),
+    'PANDING': Symbol('PANDING')
+};
+
+const StoreEvent = {
+    'PUSH': Symbol('PUSH')
+};
+
+class NestStore extends EventEmitter {
+    constructor (pid) {
+        super();
+        this.pid = pid;
+        this.mids = packageArray(pid);
+        this.cardList = [ ];
+        this.processing = this.mids.reduce((obj, mid) => {
+            obj[mid] = StoreStatus.NONE;
+            return obj;
+        }, { });
+    }
+
+    getList () { return this.cardList; }
+
+    getPid () { return this.pid; }
+
+    getMids () { return this.mids; }
+
+    getLoseCards () {
+        const diff = [ ];
+        for (const k of Object.keys(this.processing)) {
+            if (this.processing[k] === StoreStatus.NONE) {
+                diff.push(k);
+            }
+        }
+        return diff;
+    }
+
+    getCount () {
+        return this.cardList.length;
+    }
+
+    addCard (mid, card) {
+        if (this.processing[mid] !== StoreStatus.NONE) {
+            return;
+        }
+        this.processing[mid] = StoreStatus.PANDING;
+        this.cardList.push(card);
+        this.processing[mid] = StoreStatus.EXIST;
+        this.emit(StoreEvent.PUSH, this, mid);
     }
 }
 

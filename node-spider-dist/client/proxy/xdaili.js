@@ -17,7 +17,7 @@ const getListAsync = (page = 1) => {
 };
 
 const appendList = async () => {
-    await sleep(1000);
+    await sleep(3000);
     if (client.getCurrent()) {
         for (const i in Array(2)) {
             client.getCurrent().appendSpiders(await getListAsync(i));
@@ -26,8 +26,9 @@ const appendList = async () => {
 };
 
 module.exports.process = async () => {
-    await appendList();
-    schedule.scheduleJob('*/10 * * * *', () => {
+    // get per 5 min
+    schedule.scheduleJob('*/5 * * * *', () => {
         appendList();
     });
+    await appendList();
 };

@@ -5,14 +5,11 @@ const { client } = require('../..');
 const schedule = require('node-schedule');
 
 const URLS = [
-    'http://www.xicidaili.com/',
-    'http://www.xicidaili.com/nn/',
-    'http://www.xicidaili.com/nt/',
-    'http://www.xicidaili.com/wn/',
-    'http://www.xicidaili.com/wt/'
+    'https://www.kuaidaili.com/free/inha/1/',
+    'https://www.kuaidaili.com/free/intr/1/'
 ];
 
-const getListAsync = async (url = URLS[0]) => {
+const getListAsync = (url = URLS[0]) => {
     try {
         return rp({
             uri: url,
@@ -20,16 +17,13 @@ const getListAsync = async (url = URLS[0]) => {
                 return cheerio.load(body);
             }
         })
-            .then(($) => $('tr:has(td.country)'))
+            .then(($) => $('.con-body #list tbody tr'))
             .then((trs) => {
                 const list = [ ];
                 for (const tr of trs.toArray()) {
                     const tds = cheerio('td', tr);
-                    if (!/http/i.test(tds.eq(5).text())) {
-                        continue;
-                    }
                     const texts =
-                        [5, 1, 2].map((index) => tds.eq(index).text());
+                        [3, 0, 1].map((index) => tds.eq(index).text());
                     const url =
                         `${texts[0].toLowerCase()}://${texts[1]}:${texts[2]}`;
                     list.push(url);

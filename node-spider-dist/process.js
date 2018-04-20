@@ -1,19 +1,23 @@
+const lodash = require('lodash');
 const {
     sleep, nowStr, OT
 } = require('./utils');
 
-const { SpiderNest } = require('./nest');
+const { SpiderNest, NestEvent } = require('./nest');
 
-const fns = [ ];
+const events = [ ];
 
 const on = (eventName, fn) => {
+    if (!~lodash.values(NestEvent).indexOf(eventName)) {
+        return;
+    }
     let obj = {
         name: eventName,
         fns: [ ]
     };
     let point = -1;
-    for (let i = 0; i < fns.length; i++) {
-        const eventObj = fns[i];
+    for (let i = 0; i < events.length; i++) {
+        const eventObj = events[i];
         if (eventObj.name === eventName) {
             obj = eventObj;
             point = i;
@@ -22,9 +26,9 @@ const on = (eventName, fn) => {
     }
     obj.fns.push(fn);
     if (point === -1) {
-        fns.push(obj);
+        events.push(obj);
     } else {
-        fns[point] = obj;
+        events[point] = obj;
     }
 };
 
@@ -32,7 +36,7 @@ let curNest;
 
 const process = (list) => {
     curNest = new SpiderNest(list);
-    for (const eventObj of fns) {
+    for (const eventObj of events) {
         for (const fn of eventObj.fns) {
             curNest.event.on(eventObj.name, fn);
         }

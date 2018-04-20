@@ -4,7 +4,7 @@ const moment = require('moment');
 moment.locale('zh-cn');
 
 const {
-    URL_GET_PACKAGE, URL_USER_INFO, URL_UPLOAD_PACKAGE
+    URL_GET_PACKAGE, URL_USER_INFO, URL_UPLOAD_PACKAGE, ID_RANGE_NUM
 } = require('./constants');
 
 /**
@@ -47,7 +47,8 @@ const rangeArray = (start, end) => {
 
 // 按千生成区间数组
 const packageArray = (packageId) => {
-    return rangeArray(packageId * 1000 + 1, (packageId + 1) * 1000);
+    const baseNum = packageId * 1000;
+    return rangeArray(baseNum + 1, baseNum + ID_RANGE_NUM);
 };
 
 /**

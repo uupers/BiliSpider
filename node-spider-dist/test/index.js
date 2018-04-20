@@ -15,10 +15,11 @@ mock.get(URL_GET_PACKAGE, (req) => {
     };
 });
 
-mock.timeout = () => lodash.sample([30, 50, 75]);
+mock.timeout = () => lodash.sample([20, 35, 50]);
 
 mock.get(URL_USER_INFO, (req) => {
     const body = require('./user-info.json');
+    body.data.card.mid = req.query.mid;
     return {
         body, text: JSON.stringify(body)
     };
@@ -42,7 +43,8 @@ test.serial('Default', async (t) => {
     await client.process();
 });
 
-test.serial('Use Proxy', async (t) => {
+// 现在会过滤同名的代理, 所以本测试无效
+test.skip('Use Proxy', async (t) => {
     let startTime;
     mock.post(URL_UPLOAD_PACKAGE, (req) => {
         const body = {
@@ -59,7 +61,8 @@ test.serial('Use Proxy', async (t) => {
     await client.process(['']);
 });
 
-test.serial('Multi Proxy', async (t) => {
+// 现在会过滤同名的代理, 所以本测试无效
+test.skip('Multi Proxy', async (t) => {
     const proxyList = Array(5).fill('');
     let startTime;
     mock.post(URL_UPLOAD_PACKAGE, (req) => {

@@ -5,6 +5,7 @@ const ora = require('ora');
 
 const xdaili = require('./client/proxy/xdaili');
 const xicidaili = require('./client/proxy/xicidaili');
+const kuaidaili = require('./client/proxy/kuaidaili');
 
 const args = minimist(process.argv.slice(2), {
     alias: { 'p': 'proxy', 'q': 'quiet', 'np': 'netproxy' },
@@ -33,17 +34,26 @@ const barMap = { };
             });
             barMap[pid].tick(0, { 'pkg': pid });
         });
-        client.on(client.event.CATCH, (_, pid, mid, cardList) => {
+        client.on(client.event.CATCH, (pid, mid, cardList) => {
             const bar = barMap[pid];
-            bar.tick(cardList.length - bar.curr, { 'pkg': pid });
+            bar.tick({ 'pkg': pid });
         });
-        client.on(client.event.END, (_, pid, cardList) => {
-            const bar = barMap[pid];
-            bar.tick(cardList.length, { 'pkg': pid });
+        client.on(client.event.END, (pid) => {
+            delete barMap[pid];
+        });
+        client.on(client.event.TIMEOUT, (pid) => {
+            delete barMap[pid];
+            ora(`获取超时 Package ${pid}`).fail();
+        });
+        client.on(client.event.VING, (pid) => {
+            barMap[pid] = ora(`正在校检 Package ${pid}`).start();
+        });
+        client.on(client.event.VFAIL, (pid) => {
+            barMap[pid].fail(`数据有误 Package ${pid}`);
             delete barMap[pid];
         });
         client.on(client.event.SENDING, (pid) => {
-            barMap[pid] = ora(`正在上传 Package ${pid}`).start();
+            barMap[pid].start(`正在上传 Package ${pid}`);
         });
         client.on(client.event.SENDED, (pid) => {
             barMap[pid].succeed(`成功上传 Package ${pid}`);
@@ -53,6 +63,7 @@ const barMap = { };
     if (args.np) {
         xdaili.process();
         xicidaili.process();
+        kuaidaili.process();
     }
     await client.loop(proxyList);
 })();
