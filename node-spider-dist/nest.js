@@ -37,6 +37,9 @@ class SpiderNest {
         this.event.on(NestEvent.SENDED, (pid) => {
             OT.log(`[${nowStr()}] Sended package ${pid}`);
         });
+        this.event.on(NestEvent.CATCH, () => {
+            this.startedAt = Date.now();
+        });
     }
 
     appendSpiders (names) {
@@ -135,7 +138,7 @@ class SpiderNest {
         this.event.emit(NestEvent.SENDING, pid);
         return uploadPackageAsync(pid, this.store.getList()).then(() => {
             this.event.emit(NestEvent.SENDED, pid);
-        }).catch(async () => {
+        }).catch(() => {
             return this.upload(pid);
         });
     }
