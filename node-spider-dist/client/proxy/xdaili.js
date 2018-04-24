@@ -1,4 +1,4 @@
-const { httpGetAsync, sleep } = require('../../utils');
+const { httpGetAsync, sleep } = require('../utils');
 const { client } = require('../..');
 const schedule = require('node-schedule');
 

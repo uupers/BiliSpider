@@ -1,6 +1,6 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
-const { sleep, OT } = require('../../utils');
+const { sleep } = require('../utils');
 const { client } = require('../..');
 const schedule = require('node-schedule');
 
