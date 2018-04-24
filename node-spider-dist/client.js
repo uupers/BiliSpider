@@ -6,6 +6,7 @@ const ora = require('ora');
 const xdaili = require('./client/proxy/xdaili');
 const xicidaili = require('./client/proxy/xicidaili');
 const kuaidaili = require('./client/proxy/kuaidaili');
+const cnProxy = require('./client/proxy/cn-proxy');
 
 const args = minimist(process.argv.slice(2), {
     alias: { 'p': 'proxy', 'q': 'quiet', 'np': 'netproxy' },
@@ -64,6 +65,7 @@ const barMap = { };
         xdaili.process();
         xicidaili.process();
         kuaidaili.process();
+        cnProxy.process();
     }
     await client.loop(proxyList);
 })();
