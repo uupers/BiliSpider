@@ -22,8 +22,7 @@ const getListAsync = async (url = URLS[0], index = 0) => {
             timeout: 60 * 1000,
             transform: function (body) {
                 return cheerio.load(body);
-            },
-            proxy: 'http://127.0.0.1:10810'
+            }
         })
             .then(($) => $('.sortable tbody tr'))
             .then((trs) => {
@@ -56,6 +55,7 @@ const appendList = async () => {
             }
             list.map((item) => item.toString());
             client.getCurrent().appendSpiders(list);
+            await sleep(500);
         }
     }
 };

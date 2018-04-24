@@ -9,9 +9,9 @@ const URLS = [
     'https://www.kuaidaili.com/free/intr/1/'
 ];
 
-const getListAsync = (url = URLS[0]) => {
+const getListAsync = async (url = URLS[0]) => {
     try {
-        return rp({
+        return await rp({
             uri: url,
             transform: function (body) {
                 return cheerio.load(body);
@@ -45,6 +45,7 @@ const appendList = async () => {
             }
             list.map((item) => item.toString());
             client.getCurrent().appendSpiders(list);
+            await sleep(500);
         }
     }
 };

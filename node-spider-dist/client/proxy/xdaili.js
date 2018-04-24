@@ -21,6 +21,7 @@ const appendList = async () => {
     if (client.getCurrent()) {
         for (const i in Array(2)) {
             client.getCurrent().appendSpiders(await getListAsync(i));
+            await sleep(500);
         }
     }
 };
