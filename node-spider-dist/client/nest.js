@@ -97,9 +97,10 @@ class SpiderNest {
             } else if (that.isHasFree()) {
                 let spiders = that.getFreeSpiders();
                 spiders = lodash.sampleSize(spiders, spiders.length);
-                const cards = that.store.getLoseCards();
+                let cards = that.store.getLoseCards();
+                cards = lodash.sampleSize(cards, cards.length);
                 const lanuchArr =
-                    lodash.minBy([mids, spiders, cards], 'length');
+                    lodash.minBy([spiders, cards], 'length');
                 for (let i = 0; i < lanuchArr.length; i++) {
                     const spider = spiders[i];
                     spider.crawl(that.store, cards[i]);
