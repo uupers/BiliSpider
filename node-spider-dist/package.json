@@ -7,7 +7,18 @@
     "lint": "eslint index.js client.js test/**/*.js",
     "test": "ava"
   },
-  "author": "Nintha",
+  "homepage": "https://github.com/uupers/BiliSpider#readme",
+  "bugs": {
+    "url": "https://github.com/uupers/BiliSpider/issues"
+  },
+  "engines" : {
+    "node" : ">=8.4"
+  },
+  "repository": "github:uupers/BiliSpider",
+  "author": "Nintha <nintahkeey@hotmail.com>",
+  "contributors": [
+    "AryloYeung <arylo.open@gmail.com>"
+  ],
   "license": "GNU General Public License v3.0",
   "dependencies": {
     "body-parser": "^1.18.2",
