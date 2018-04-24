@@ -10,6 +10,7 @@ const cnProxy = require('./client/proxy/cn-proxy');
 const ip89 = require('./client/proxy/89ip');
 const yundaili = require('./client/proxy/yundaili');
 const mogudaili = require('./client/proxy/mogudaili');
+const mayidaili = require('./client/proxy/mayidaili');
 
 const args = minimist(process.argv.slice(2), {
     alias: { 'p': 'proxy', 'q': 'quiet', 'np': 'netproxy' },
@@ -72,6 +73,7 @@ const barMap = { };
         ip89.process();
         yundaili.process();
         mogudaili.process();
+        mayidaili.process();
     }
     await client.loop(proxyList);
 })();
