@@ -37,6 +37,7 @@ test.serial('Default', async (t) => {
         t.is(body.pid, 1234);
         t.is(body.package.length, 1000);
         t.true((Date.now() - startTime) >= SLEEP_NORMAL_LOCAL * 1000);
+        t.is(typeof body.package[0].mid, 'number');
         return { };
     });
     startTime = Date.now();
