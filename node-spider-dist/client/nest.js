@@ -108,8 +108,16 @@ class SpiderNest {
                 let cards = that.store.getLoseCards();
                 cards = lodash.sampleSize(cards, cards.length);
                 const lanuchArr =
-                    lodash.minBy([spiders, cards], 'length');
+                lodash.minBy([spiders, cards], 'length');
                 for (let i = 0; i < lanuchArr.length; i++) {
+                    const spider = spiders[i];
+                    spider.crawl(that.store, cards[i]);
+                }
+                if (spiders.length <= cards.length) {
+                    continue;
+                }
+                cards = lodash.sampleSize(cards, cards.length);
+                for (let i = lanuchArr.length; i < spiders.length; i++) {
                     const spider = spiders[i];
                     spider.crawl(that.store, cards[i]);
                 }
