@@ -6,8 +6,10 @@ const { ID_RANGE_NUM } = require('./constants');
 const lodash = require('lodash');
 const EventEmitter = require('events').EventEmitter;
 const config = require('y-config');
+const Keyv = require('keyv');
 
 const NestEvent = {
+    'HEART': Symbol('HEART'),
     'START': Symbol('START'),
     'END': Symbol('END'),
     'SENDING': Symbol('SENDING'),
@@ -28,6 +30,7 @@ class SpiderNest {
         this.nest = [ ];
         this.event = new EventEmitter();
         this.startedAt = 0;
+        this.keyv = new Keyv();
 
         this.appendSpiders(list);
         this.event.on(NestEvent.START, (pid, mids) => {
@@ -94,6 +97,7 @@ class SpiderNest {
                 that.event.emit(NestEvent.TIMEOUT, pid);
                 break;
             }
+            this.event.emit(NestEvent.HEART, pid, await that.getSpidersInfo());
             if (that.store.getCount() === ID_RANGE_NUM) {
                 that.event.emit(NestEvent.END, pid, that.store.getList());
                 await that.upload(pid);
@@ -173,6 +177,22 @@ class SpiderNest {
         return this.nest.filter((s) => {
             return s.status === SpiderStatus.FREE;
         });
+    }
+
+    async getSpidersInfo () {
+        const KEY = 'info';
+        let content = await this.keyv.get(KEY);
+        if (content) {
+            return content;
+        }
+        content = {
+            active:
+                this.nest.filter((s) => s.status !== SpiderStatus.BAN).length,
+            ban: this.nest.filter((s) => s.status === SpiderStatus.BAN).length,
+            total: this.nest.length
+        };
+        await this.keyv.set('info', content, 1000); // Cache 1s
+        return content;
     }
 
     randomSpider () {

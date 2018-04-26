@@ -41,18 +41,43 @@ const startLoop = async () => {
     if (args.quiet) {
         client.setOutput();
     } else if (!args.old) {
+        let spiderInfo;
         client.setOutput();
         client.on(client.event.START, (pid, mids) => {
-            const format = 'Package :pkg [:bar] :percent :rate/urs :elapseds';
+            const format =
+                'Package :pkg [:bar] :percent :rate/urs:active:ban:ips :elapseds';
             barMap[pid] = new ProgressBar(format, {
-                width: 40,
+                width: 25,
                 total: mids.length
             });
             barMap[pid].tick(0, { 'pkg': pid });
         });
+        client.on(client.event.HEART, (pid, info) => {
+            const bar = barMap[pid];
+            if (!bar) {
+                return;
+            }
+            spiderInfo = info;
+            const a = `${spiderInfo.active}${spiderInfo.ban === 0 ? '' : 'A'}`;
+            bar.tick(0, {
+                'pkg': pid,
+                'active': spiderInfo.total <= 1 ? '' : `[${a}`,
+                'ban': spiderInfo.ban === 0 ? '' : `,${spiderInfo.ban}B`,
+                'ips': spiderInfo.total <= 1 ? '' : `/${spiderInfo.total}IPs]`
+            });
+        });
         client.on(client.event.CATCH, (pid, mid, cardList) => {
             const bar = barMap[pid];
-            bar.tick({ 'pkg': pid });
+            if (!bar) {
+                return;
+            }
+            const a = `${spiderInfo.active}${spiderInfo.ban === 0 ? '' : 'A'}`;
+            bar.tick({
+                'pkg': pid,
+                'active': spiderInfo.total <= 1 ? '' : `[${a}`,
+                'ban': spiderInfo.ban === 0 ? '' : `,${spiderInfo.ban}B`,
+                'ips': spiderInfo.total <= 1 ? '' : `/${spiderInfo.total}IPs]`
+            });
         });
         client.on(client.event.END, (pid) => {
             delete barMap[pid];

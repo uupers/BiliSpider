@@ -25,6 +25,7 @@
     "cfonts": "^1.2.0",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
+    "keyv": "^3.0.0",
     "lodash": "^4.17.5",
     "minimist": "^1.2.0",
     "moment": "^2.21.0",
