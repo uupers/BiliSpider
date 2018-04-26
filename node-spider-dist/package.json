@@ -11,8 +11,8 @@
   "bugs": {
     "url": "https://github.com/uupers/BiliSpider/issues"
   },
-  "engines" : {
-    "node" : ">=8.4"
+  "engines": {
+    "node": ">=8.4"
   },
   "repository": "github:uupers/BiliSpider",
   "author": "Nintha <nintahkeey@hotmail.com>",
@@ -36,7 +36,8 @@
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
     "superagent": "^3.8.2",
-    "superagent-proxy": "^1.0.3"
+    "superagent-proxy": "^1.0.3",
+    "y-config": "^1.1.5"
   },
   "devDependencies": {
     "ava": "^0.25.0",

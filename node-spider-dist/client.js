@@ -15,14 +15,25 @@ const mayidaili = require('./client/proxy/mayidaili');
 const args = minimist(process.argv.slice(2), {
     alias: { 'p': 'proxy', 'q': 'quiet', 'np': 'netproxy' },
     string: 'proxy',
-    boolean: ['quiet', 'old', 'netproxy'],
+    boolean: ['quiet', 'old', 'netproxy', 'dev'],
     default: { proxy: [ ], quiet: false, old: false }
 });
+
+const config = require('y-config');
+config.args = args;
 
 const proxyList =
     typeof args.proxy === 'string' ? [ args.proxy ] : args.proxy;
 
 const barMap = { };
+
+const startLoop = async () => {
+    try {
+        return await client.loop(proxyList);
+    } catch (error) {
+        return startLoop();
+    }
+};
 
 // start code
 (async () => {
@@ -64,6 +75,10 @@ const barMap = { };
             barMap[pid].succeed(`成功上传 Package ${pid}`);
             delete barMap[pid];
         });
+        client.on(client.event.SENDFAIL, (pid) => {
+            barMap[pid].fail(`上传失败 Package ${pid}`);
+            delete barMap[pid];
+        });
     }
     if (args.np) {
         xdaili.process();
@@ -75,5 +90,5 @@ const barMap = { };
         mogudaili.process();
         mayidaili.process();
     }
-    await client.loop(proxyList);
+    await startLoop();
 })();

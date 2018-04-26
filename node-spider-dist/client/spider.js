@@ -77,7 +77,7 @@ class Spider {
                 return;
             }
             const data = JSON.parse(rs).data;
-            data.card.mid = mid;
+            data.card.mid = +mid;
             data.card.archive_count = data.archive_count;
             data.card.ctime = nowStr();
             store.addCard(mid, data.card);

@@ -5,12 +5,14 @@ const {
 const { ID_RANGE_NUM } = require('./constants');
 const lodash = require('lodash');
 const EventEmitter = require('events').EventEmitter;
+const config = require('y-config');
 
 const NestEvent = {
     'START': Symbol('START'),
     'END': Symbol('END'),
     'SENDING': Symbol('SENDING'),
     'SENDED': Symbol('SENDED'),
+    'SENDFAIL': Symbol('SENDFAIL'),
     'VING': Symbol('VING'),
     'VSUCCESS': Symbol('VSUCCESS'),
     'VFAIL': Symbol('VFAIL'),
@@ -50,7 +52,7 @@ class SpiderNest {
         this.nest.push(...list.map((name) => {
             const spider = new Spider(name);
             const event = spider.event;
-            event.on(SpiderEvent.ERROR, (s, _, mid, msg) => {
+            event.on(SpiderEvent.ERROR, (s, mid, msg) => {
                 OT.error(`[${nowStr()}][${s.url}] mid=${mid} ${msg}`);
                 if (s.errors >= 5) {
                     this.cleanDeadSpider(this.names.indexOf(s.url));
@@ -59,12 +61,14 @@ class SpiderNest {
             event.on(SpiderEvent.BAN, (s) => {
                 OT.warn(`[${nowStr()}][${s.url}] oops，你的IP进小黑屋了，爬虫程序会在10min后继续`);
             });
-            event.on(SpiderEvent.START, (s, mid) => {
-                OT.log(`[${nowStr()}][${s.url}] mid=${mid} Start`);
-            });
-            event.on(SpiderEvent.END, (s, mid) => {
-                OT.log(`[${nowStr()}][${s.url}] mid=${mid} Get`);
-            });
+            if ((config.args || { }).dev) {
+                event.on(SpiderEvent.START, (s, mid) => {
+                    OT.log(`[${nowStr()}][${s.url}] mid=${mid} Start`);
+                });
+                event.on(SpiderEvent.END, (s, mid) => {
+                    OT.log(`[${nowStr()}][${s.url}] mid=${mid} Get`);
+                });
+            }
             return spider;
         }));
         return true;
@@ -131,16 +135,19 @@ class SpiderNest {
         return true;
     }
 
-    async upload () {
+    async upload (index = 0) {
         const pid = this.store.getPid();
         if (!this.validtion(pid)) {
             return;
         }
-        this.event.emit(NestEvent.SENDING, pid);
+        this.event.emit(NestEvent.SENDING, pid, index);
         return uploadPackageAsync(pid, this.store.getList()).then(() => {
             this.event.emit(NestEvent.SENDED, pid);
         }).catch(() => {
-            return this.upload(pid);
+            if (index < 10) {
+                return this.upload(++index);
+            }
+            this.event.emit(NestEvent.SENDFAIL, pid);
         });
     }
 
