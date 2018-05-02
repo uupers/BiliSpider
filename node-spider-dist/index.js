@@ -1,9 +1,13 @@
-const spider = require('./spider');
-const utils = require('./utils');
+const process = require('./client/process');
+const utils = require('./client/utils');
+const { NestEvent } = require('./client/nest');
 
 const client = {
-    process: spider.process,
-    loop: spider.loop,
+    process: process.process,
+    loop: process.loop,
+    on: process.on,
+    event: NestEvent,
+    getCurrent: process.getCurrent,
     setOutput: utils.setOutput
 };
 

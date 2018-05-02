@@ -1,9 +1,10 @@
 const superagent = require('superagent');
+require('superagent-proxy')(superagent);
 const moment = require('moment');
 moment.locale('zh-cn');
 
 const {
-    URL_GET_PACKAGE, URL_USER_INFO, URL_UPLOAD_PACKAGE
+    URL_GET_PACKAGE, URL_USER_INFO, URL_UPLOAD_PACKAGE, ID_RANGE_NUM
 } = require('./constants');
 
 /**
@@ -14,13 +15,26 @@ const sleep = (time) => {
     return new Promise(resolve => setTimeout(resolve, time));
 };
 
-const httpGetAsync = (url, opts = { query: [ ] }) => {
-    let req = superagent.get(url);
-    if (opts && Array.isArray(opts.query) && opts.query.length > 0) {
-        for (const q of opts.query) {
-            req = req.query(q);
+const DEF_HTTP_GET_OPTIONS = {
+    query: [ ],
+    proxy: ''
+};
+
+const httpGetAsync = (url, opts = DEF_HTTP_GET_OPTIONS) => {
+    let req = superagent.get(url).timeout(5000);
+    if (opts) {
+        if (Array.isArray(opts.query) && opts.query.length > 0) {
+            for (const q of opts.query) {
+                req = req.query(q);
+            }
+        }
+        if (typeof opts.proxy === 'string') {
+            if (opts.proxy !== '') {
+                req = req.proxy(opts.proxy);
+            }
         }
     }
+
     return req.then((res) => res && res.text);
 };
 
@@ -33,7 +47,8 @@ const rangeArray = (start, end) => {
 
 // 按千生成区间数组
 const packageArray = (packageId) => {
-    return rangeArray(packageId * 1000 + 1, (packageId + 1) * 1000);
+    const baseNum = packageId * 1000;
+    return rangeArray(baseNum + 1, baseNum + ID_RANGE_NUM);
 };
 
 /**
@@ -53,8 +68,11 @@ const uploadPackageAsync = (pid, cardList) => {
 /**
  * 爬取用户信息
  */
-const fetchUserInfo = (mid) => {
-    return httpGetAsync(URL_USER_INFO, { query: [{ mid }] });
+const fetchUserInfo = (mid, opts = { proxy: '' }) => {
+    return httpGetAsync(
+        URL_USER_INFO,
+        Object.assign({ query: [{ mid }] }, opts)
+    );
 };
 
 const setMock = (mockModule) => {
@@ -69,6 +87,12 @@ const OT = {
 };
 
 const setOutput = (obj) => {
+    if (!obj) {
+        for (const method of Object.keys(OT)) {
+            OT[method] = () => { };
+        }
+        return;
+    }
     for (const method of Object.keys(OT)) {
         const fn = obj[method];
         if (fn && typeof fn === 'function') {

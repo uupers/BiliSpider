@@ -4,18 +4,41 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js client.js spider.js utils.js constants.js test/**/*.js",
+    "lint": "eslint index.js client.js test/**/*.js",
     "test": "ava"
   },
-  "author": "Nintha",
+  "homepage": "https://github.com/uupers/BiliSpider#readme",
+  "bugs": {
+    "url": "https://github.com/uupers/BiliSpider/issues"
+  },
+  "engines": {
+    "node": ">=8.4"
+  },
+  "repository": "github:uupers/BiliSpider",
+  "author": "Nintha <nintahkeey@hotmail.com>",
+  "contributors": [
+    "AryloYeung <arylo.open@gmail.com>"
+  ],
   "license": "GNU General Public License v3.0",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cfonts": "^1.2.0",
+    "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
+    "keyv": "^3.0.0",
+    "lodash": "^4.17.5",
+    "minimist": "^1.2.0",
     "moment": "^2.21.0",
     "mongodb": "^3.0.4",
+    "node-schedule": "^1.3.0",
+    "ora": "^2.0.0",
+    "progress": "^2.0.0",
     "redis": "^2.8.0",
-    "superagent": "^3.8.2"
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "superagent": "^3.8.2",
+    "superagent-proxy": "^1.0.3",
+    "y-config": "^1.1.5"
   },
   "devDependencies": {
     "ava": "^0.25.0",
