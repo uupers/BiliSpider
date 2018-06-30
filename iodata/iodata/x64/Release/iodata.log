@@ -1,6 +1,6 @@
 ﻿  dllmain.c
-c:\users\surface\desktop\spidertest\iodata\iodata\dllmain.c(41): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-c:\users\surface\desktop\spidertest\iodata\iodata\dllmain.c(71): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+c:\users\surface\desktop\spidertest\iodata\iodata\dllmain.c(42): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+c:\users\surface\desktop\spidertest\iodata\iodata\dllmain.c(72): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
     正在创建库 C:\Users\surface\Desktop\spidertest\iodata\x64\Release\iodata.lib 和对象 C:\Users\surface\Desktop\spidertest\iodata\x64\Release\iodata.exp
   正在生成代码
   1 of 6 functions (16.7%) were compiled, the rest were copied from previous compilation.
